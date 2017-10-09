@@ -76,7 +76,7 @@ void insert(List *list, const  void* data, int sz)
 
         while (target->Next != NULL)
         {
-            if (target->Next->Data > data)
+            if ( memcmp(target->Next->Data, data, target->Next->Size) > 0)
             {
                 break;
             }
@@ -227,7 +227,7 @@ void sort(List *list)
 
         for (j = 0; j < list->Count - 1 - i; j++)
         {
-            if (currentnode->Data > currentnode->Next->Data)
+            if ( memcmp(currentnode->Data, currentnode->Next->Data, currentnode->Size) > 0 )
             {
                 void* temp = currentnode->Data;
                 currentnode->Data = currentnode->Next->Data;
@@ -267,7 +267,7 @@ int search(List *list, const void* data)
             break;
         }
 
-        if (memcmp(data, ptr->Data, (size_t)ptr->Size) == 0)
+        if (memcmp(data, ptr->Data, ptr->Size) == 0)
         {
             return ctr;
         }
@@ -286,7 +286,7 @@ void setAt(List *list, int atpos, void* data)
 
     if (d)
     {
-        memcpy(d, data, (size_t)list->First->Size);
+        memcpy(d, data, list->First->Size);
     }
 }
 

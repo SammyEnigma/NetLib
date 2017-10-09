@@ -1,7 +1,13 @@
 #ifndef _LIST
 #define _LIST
 
-#include "Node.h"
+typedef struct Node
+{
+	void* Data;
+	int Size;
+	struct Node* Previous;
+	struct Node* Next;
+}Node;
 
 typedef struct List
 {

@@ -224,16 +224,14 @@
     <ClInclude Include="./headers/Character.h" />
     <ClInclude Include="./headers/StringEx.h" />
     <ClInclude Include="./headers/List.h" />
-    <ClInclude Include="./headers/Node.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="./sources/dllmain.c" />
     <ClCompile Include="./sources/CoreLib.c" />
     <ClCompile Include="./sources/Base64.c" />
     <ClCompile Include="./sources/Character.c" />
     <ClCompile Include="./sources/StringEx.c" />
     <ClCompile Include="./sources/List.c" />
- </ItemGroup>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

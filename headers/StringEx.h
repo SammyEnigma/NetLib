@@ -1,118 +1,52 @@
 #ifndef _STRING_EX
 #define _STRING_EX
 
-//#include <memory.h>
-//#include <stdlib.h>
-//#include <stdio.h>
-#include "List.h"
+//#include "List.h"
+#include <memory.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
-namespace CoreLibrary
-{
-	class GenericStringList;
+#if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
+#define strtoull(str, endptr, base) _strtoui64(str, endptr, base)
+#endif
 
-	class GenericString
-	{
-	public:
-		GenericString();
-		GenericString(long len);
-		GenericString(const GenericString &obj);
-		GenericString(const GenericString *ptr);
-		GenericString(const char* ptr);
-		GenericString(const wchar_t* ptr);
-		GenericString(const char* ptr, int startpos, int endpos);
-		~GenericString();
+extern wchar_t* strtowstr(const char* str);
+extern char* strfromwstr(const wchar_t* wstr);
 
-		long length() const;
-		void clear();
-		void assign(const char *ptr);
-		void assign(const char *ptr, int startpos, int endpos);
-		const char* buffer() const;
-		int indexOf(const GenericString &obj, int startpos = 0) const;
-		int indexOf(const char* ptr, int startpos = 0) const;
-		int indexOf(const char ch, int startpos = 0) const;
-		void getSubString(int pos, int len, GenericString &substr) const;
+extern char* strfromint(size_t num);
+extern char* strfromdouble(double num);
 
-		int getInt(int pos, int len) const;
-		long getLong(int pos, int len) const;
-		long long getLongLong(int pos, int len) const;
-		unsigned int getUnsignedInt(int pos, int len) const;
-		unsigned long getUnsignedLong(int pos, int len) const;
-		unsigned long long getUnsignedLongLong(int pos, int len) const;
-		double getDouble(int pos, int len) const;
+#if !defined(_WIN32) && !defined(WIN32) && !defined (_WIN64) && !defined (WIN64)
+extern char* strrev(char* ptr);
+#endif
 
-		int getInt() const;
-		long getLong() const;
-		long long getLongLong() const;
-		unsigned int getUnsignedInt() const;
-		unsigned long getUnsignedLong() const;
-		unsigned long long getUnsignedLongLong() const;
-		double getDouble() const;
+extern char* strsegrev(char* str, size_t start, size_t term);
 
-		int countOf(const GenericString &obj) const;
-		int countOf(const char* ptr) const;
-		int countOf(const char ch) const;
+extern int strindexofsubstr(char* str, const char* substr);
+extern int strindexofchar(char* str, const char ch);
 
-		void toLower();
-		void toUpper();
-		void leftTrim();
-		void rightTrim();
-		void trim();
-		void reverse();
-		void reverse(int start, int len);
+extern char* strtolower(char* str);
+extern char* strtoupper(char* str);
 
-		void replace(const GenericString &oldpattern, const GenericString &newpattern);
-		void replace(const char oldchar, const char newchar);
-		void replace(const GenericString &oldpattern, const long npattern);
-		void replace(const GenericString &oldpattern, const double npattern);
-		void replace(const GenericString &oldpattern, const int npattern);
+extern char* strlefttrim(char* str);
+extern char* strrighttrim(char* str);
+extern char* stralltrim(char* str);
 
-		void remove(const GenericString &oldpattern);
-		void remove(const char oldchar);
-		void removeAll(const char oldchar);
-		bool removeFirst(const char oldchar);
-		void removeAt(int pos, int len);
+extern char* strremsubstrfirst(char* str, const char* substr);
+extern char* strremsubstrall(char* str, const char* substr);
+extern char* strremsubstrat(char* str, size_t pos, size_t len);
 
-		void getKeyValuePair(GenericString &key, GenericString &value, const char delimiter);
-		void getKeyValuePair(GenericString &key, GenericString &value, const GenericString &delimiter);
+extern char* strremcharfirst(char* str, const char oldchar);
+extern char* strremcharall(char* str, const char oldchar);
+extern char* strremcharat(char* str, size_t pos);
 
-		void getSubStringList(List &tokens, const char delimiter = ' ');
-		void getSubStringList(List &tokens, const GenericString &delimiter = " ");
+extern char* strrepsubstrfirst(char* str, const char* substr);
+extern char* strrepsubstrall(char* str, const char* substr);
+extern char* strrepsubstrat(char* str, size_t pos, size_t len);
 
-		char getAt(const int atpos) const;
-		void SetAt(const int atpos, const char ch);
-
-		unsigned char* fromBase64();
-		char* toBase64();
-		wchar_t* toWideCharacter();
-		static long length(const char* ptr);
-
-		static void join(List &tokens, GenericString &newString, const char delimiter = ' ');
-		static void join(List &tokens, GenericString &newString, const GenericString &delimiter = " ");
-
-		void operator=(const GenericString& other);
-		bool operator!=(const GenericString& other);
-		bool operator==(const GenericString& other);
-		bool operator>(const GenericString& other);
-		bool operator<(const GenericString& other);
-
-		GenericString& operator+=(const GenericString& other);
-		GenericString& operator+=(const char& other);
-		GenericString& operator+=(const int& other);
-		GenericString& operator+=(const long& other);
-		GenericString& operator+=(const double& other);
-
-		GenericString operator+(const GenericString& other);
-		GenericString operator+(const char& other);
-		GenericString operator+(const int& other);
-		GenericString operator+(const long& other);
-		GenericString operator+(const double& other);
-
-		char& operator[](const long index);
-	private:
-		char*	_Buffer;
-		long	_BufferLen;
-		long	_StringLen;
-	};
-}
+extern char* strrepcharfirst(char* str, const char oldchar);
+extern char* strrepcharall(char* str, const char oldchar);
+extern char* strrepcharat(char* str, size_t pos);
 
 #endif
