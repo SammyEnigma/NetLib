@@ -1,6 +1,9 @@
-#ifndef _GENERIC_STRING
-#define _GENERIC_STRING
+#ifndef _STRING_EX
+#define _STRING_EX
 
+//#include <memory.h>
+//#include <stdlib.h>
+//#include <stdio.h>
 #include "List.h"
 
 namespace CoreLibrary
@@ -72,8 +75,8 @@ namespace CoreLibrary
 		void getKeyValuePair(GenericString &key, GenericString &value, const char delimiter);
 		void getKeyValuePair(GenericString &key, GenericString &value, const GenericString &delimiter);
 
-		void getSubStringList(List<GenericString> &tokens, const char delimiter = ' ');
-		void getSubStringList(List<GenericString> &tokens, const GenericString &delimiter = " ");
+		void getSubStringList(List &tokens, const char delimiter = ' ');
+		void getSubStringList(List &tokens, const GenericString &delimiter = " ");
 
 		char getAt(const int atpos) const;
 		void SetAt(const int atpos, const char ch);
@@ -83,8 +86,8 @@ namespace CoreLibrary
 		wchar_t* toWideCharacter();
 		static long length(const char* ptr);
 
-		static void join(List<GenericString> &tokens, GenericString &newString, const char delimiter = ' ');
-		static void join(List<GenericString> &tokens, GenericString &newString, const GenericString &delimiter = " ");
+		static void join(List &tokens, GenericString &newString, const char delimiter = ' ');
+		static void join(List &tokens, GenericString &newString, const GenericString &delimiter = " ");
 
 		void operator=(const GenericString& other);
 		bool operator!=(const GenericString& other);

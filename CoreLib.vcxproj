@@ -101,38 +101,38 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <IncludePath>E:\Development\Working\CoreLibrary\CoreLibrary\headers;$(IncludePath)</IncludePath>
-    <SourcePath>E:\Development\Working\CoreLibrary\CoreLibrary\sources;$(SourcePath)</SourcePath>
+    <IncludePath>./headers;$(IncludePath)</IncludePath>
+    <SourcePath>./sources;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <IncludePath>E:\Development\Working\CoreLibrary\CoreLibrary\headers;$(IncludePath)</IncludePath>
-    <SourcePath>E:\Development\Working\CoreLibrary\CoreLibrary\sources;$(SourcePath)</SourcePath>
+    <IncludePath>./headers;$(IncludePath)</IncludePath>
+    <SourcePath>./sources;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <IncludePath>E:\Development\Working\CoreLibrary\CoreLibrary\headers;$(IncludePath)</IncludePath>
-    <SourcePath>E:\Development\Working\CoreLibrary\CoreLibrary\sources;$(SourcePath)</SourcePath>
+    <IncludePath>./headers;$(IncludePath)</IncludePath>
+    <SourcePath>./sources;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <IncludePath>E:\Development\Working\CoreLibrary\CoreLibrary\headers;$(IncludePath)</IncludePath>
-    <SourcePath>E:\Development\Working\CoreLibrary\CoreLibrary\sources;$(SourcePath)</SourcePath>
+    <IncludePath>./headers;$(IncludePath)</IncludePath>
+    <SourcePath>./sources;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <IncludePath>E:\Development\Working\CoreLibrary\CoreLibrary\headers;$(IncludePath)</IncludePath>
-    <SourcePath>E:\Development\Working\CoreLibrary\CoreLibrary\sources;$(SourcePath)</SourcePath>
+    <IncludePath>./headers;$(IncludePath)</IncludePath>
+    <SourcePath>./sources;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <IncludePath>E:\Development\Working\CoreLibrary\CoreLibrary\headers;$(IncludePath)</IncludePath>
-    <SourcePath>E:\Development\Working\CoreLibrary\CoreLibrary\sources;$(SourcePath)</SourcePath>
+    <IncludePath>./headers;$(IncludePath)</IncludePath>
+    <SourcePath>./sources;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -219,20 +219,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CoreLib.h" />
-    <ClInclude Include="headers\Base64.h" />
-    <ClInclude Include="headers\Character.h" />
-    <ClInclude Include="headers\GenericString.h" />
-    <ClInclude Include="headers\List.h" />
-    <ClInclude Include="headers\Node.h" />
+    <ClInclude Include="./headers/CoreLib.h" />
+    <ClInclude Include="./headers/Base64.h" />
+    <ClInclude Include="./headers/Character.h" />
+    <ClInclude Include="./headers/StringEx.h" />
+    <ClInclude Include="./headers/List.h" />
+    <ClInclude Include="./headers/Node.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.c" />
-    <ClCompile Include="CoreLib.cpp" />
-    <ClCompile Include="sources\Base64.cpp" />
-    <ClCompile Include="sources\Character.cpp" />
-    <ClCompile Include="sources\GenericString.cpp" />
-  </ItemGroup>
+    <ClCompile Include="./sources/dllmain.c" />
+    <ClCompile Include="./sources/CoreLib.c" />
+    <ClCompile Include="./sources/Base64.c" />
+    <ClCompile Include="./sources/Character.c" />
+    <ClCompile Include="./sources/StringEx.c" />
+    <ClCompile Include="./sources/List.c" />
+ </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

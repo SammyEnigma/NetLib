@@ -1,9 +1,6 @@
-#include "GenericString.h"
+#include "StringEx.h"
 #include "Base64.h"
 #include "Character.h"
-//#include <memory.h>
-//#include <stdlib.h>
-//#include <stdio.h>
 
 namespace CoreLibrary
 {
