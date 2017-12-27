@@ -1,5 +1,5 @@
-#ifndef _CHARACTER
-#define _CHARACTER
+#ifndef _CHARACTER_C
+#define _CHARACTER_C
 
 #include <ctype.h>
 

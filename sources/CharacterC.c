@@ -1,4 +1,4 @@
-#include "Character.h"
+#include "CharacterC.h"
 
 int isspecial(char ch)
 {

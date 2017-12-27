@@ -1,5 +1,5 @@
-#ifndef _LIST
-#define _LIST
+#ifndef _LIST_C
+#define _LIST_C
 
 typedef struct Node
 {

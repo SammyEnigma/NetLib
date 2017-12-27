@@ -1,4 +1,4 @@
-#include "StringEx.h"
+#include "StringExC.h"
 
 wchar_t *strtowstr(const char *str)
 {

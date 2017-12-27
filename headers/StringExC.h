@@ -1,5 +1,5 @@
-#ifndef _STRING_EX
-#define _STRING_EX
+#ifndef _STRING_EX_C
+#define _STRING_EX_C
 
 //#include "List.h"
 #include <memory.h>

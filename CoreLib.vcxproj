@@ -34,8 +34,8 @@
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.10586.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.16299.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <ProjectName>CoreLib</ProjectName>
   </PropertyGroup>
@@ -220,17 +220,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="./headers/CoreLib.h" />
-    <ClInclude Include="./headers/Base64.h" />
-    <ClInclude Include="./headers/Character.h" />
-    <ClInclude Include="./headers/StringEx.h" />
-    <ClInclude Include="./headers/List.h" />
+    <ClInclude Include="headers\Base64C.h" />
+    <ClInclude Include="headers\CharacterC.h" />
+    <ClInclude Include="headers\StringExC.h" />
+    <ClInclude Include="headers\ListC.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="./sources/CoreLib.c" />
-    <ClCompile Include="./sources/Base64.c" />
-    <ClCompile Include="./sources/Character.c" />
-    <ClCompile Include="./sources/StringEx.c" />
-    <ClCompile Include="./sources/List.c" />
+    <ClCompile Include="sources\Base64C.c" />
+    <ClCompile Include="sources\CharacterC.c" />
+    <ClCompile Include="sources\StringExC.c" />
+    <ClCompile Include="sources\ListC.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
