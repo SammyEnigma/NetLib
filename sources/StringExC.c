@@ -115,7 +115,6 @@ char* strsegrev(char* str, size_t start, size_t term)
     return str;
 }
 
-
 int strindexofsubstr(char* str, const char* substr)
 {
     return -1;
