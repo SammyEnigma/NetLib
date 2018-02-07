@@ -1,11 +1,8 @@
 #ifndef _STRING_EX_C
 #define _STRING_EX_C
 
-//#include "List.h"
-#include <memory.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include "ListC.h"
+#include <stddef.h>
 
 #if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
 #define strtoull(str, endptr, base) _strtoui64(str, endptr, base)
@@ -23,8 +20,11 @@ extern char* strrev(char* ptr);
 
 extern char* strsegrev(char* str, size_t start, size_t term);
 
-extern int strindexofsubstr(char* str, const char* substr);
-extern int strindexofchar(char* str, const char ch);
+extern size_t strindexofsubstr(char* str, const char* substr);
+extern size_t strindexofchar(char* str, const char ch);
+
+extern size_t strcountsubstr(char* str, const char* substr);
+extern size_t strcountchar(char* str, const char ch);
 
 extern char* strtolower(char* str);
 extern char* strtoupper(char* str);
@@ -45,8 +45,12 @@ extern char* strrepsubstrfirst(char* str, const char* substr);
 extern char* strrepsubstrall(char* str, const char* substr);
 extern char* strrepsubstrat(char* str, size_t pos, size_t len);
 
-extern char* strrepcharfirst(char* str, const char oldchar);
-extern char* strrepcharall(char* str, const char oldchar);
-extern char* strrepcharat(char* str, size_t pos);
+extern char* strrepcharfirst(char* str, const char oldchar, const char newchar);
+extern char* strrepcharall(char* str, const char oldchar, const char newchar);
+extern char* strrepcharat(char* str, const char newchar, size_t pos);
+
+extern ListC* strsplitsubstr(char* str, const char* substr);
+extern ListC* strsplitchar(char* str, const char ch);
+extern char* strjoin(ListC *strlist);
 
 #endif

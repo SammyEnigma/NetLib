@@ -1,4 +1,8 @@
 #include "StringExC.h"
+#include <memory.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 wchar_t *strtowstr(const char *str)
 {
@@ -47,7 +51,7 @@ char* strfromint(size_t num)
 		remainder = dividend % 10;
 		dividend = dividend / 10;
 
-		ptr[ctr] = remainder + 48;
+        ptr[ctr] = (size_t)(remainder + 48);
 		ctr++;
 	}
 
@@ -115,12 +119,23 @@ char* strsegrev(char* str, size_t start, size_t term)
     return str;
 }
 
-int strindexofsubstr(char* str, const char* substr)
+size_t strindexofsubstr(char* str, const char* substr)
 {
-    return -1;
+    int result = -1;
+
+    char* pdest = (char*)strstr( str, substr );
+
+    if(pdest == 0)
+    {
+        return -1;
+    }
+
+    result = pdest - str;
+
+    return result;
 }
 
-int strindexofchar(char* str, const char ch)
+size_t strindexofchar(char* str, const char ch)
 {
     for (int ctr = 0; str[ctr] != '\0'; ctr++)
     {
@@ -130,6 +145,16 @@ int strindexofchar(char* str, const char ch)
         }
     }
 
+    return -1;
+}
+
+size_t strcountsubstr(char* str, const char* substr)
+{
+    return -1;
+}
+
+size_t strcountchar(char* str, const char ch)
+{
     return -1;
 }
 
@@ -208,39 +233,76 @@ char* stralltrim(char* str)
 {
     strrighttrim(str);
     strlefttrim(str);
-
     return str;
 }
 
 char* strremsubstrfirst(char* str, const char* substr)
 {
-    return NULL;
+    int pos = -1;
+    int offset = strlen(substr);
+
+    pos = strindexofsubstr(str, substr);
+
+    if(pos >= 0)
+    {
+        strcpy(str+pos, str+pos+offset);
+        str[strlen(str) - offset] = 0;
+    }
+    return str;
 }
 
 char* strremsubstrall(char* str, const char* substr)
 {
-    return NULL;
+    int pos = -1;
+    int offset = strlen(substr);
+
+    pos = strindexofsubstr(str, substr);
+
+    while(pos >= 0)
+    {
+        strcpy(str+pos, str+pos+offset);
+        str[strlen(str) - offset] = 0;
+        pos = strindexofsubstr(str, substr);
+    }
+    return str;
 }
 
 char* strremsubstrat(char* str, size_t pos, size_t len)
 {
-    return NULL;
+    if(pos >= 0 && pos <= (strlen(str)-1) )
+    {
+        strcpy(str+pos, str+pos+len);
+        str[strlen(str) - len] = 0;
+    }
+    return str;
 }
-
 
 char* strremcharfirst(char* str, const char oldchar)
 {
-    return NULL;
+    int pos = strindexofchar(str, oldchar);
+    strcpy(str+pos, str+pos+1);
+    str[strlen(str) - 1] = 0;
+    return str;
 }
 
 char* strremcharall(char* str, const char oldchar)
 {
-    return NULL;
+    int pos = strindexofchar(str, oldchar);
+
+    while(pos >= 0)
+    {
+        strcpy(str+pos, str+pos+1);
+        str[strlen(str) - 1] = 0;
+        pos = strindexofchar(str, oldchar);
+    }
+    return str;
 }
 
 char* strremcharat(char* str, size_t pos)
 {
-    return NULL;
+    strcpy(str+pos, str+pos+1);
+    str[strlen(str) - 1] = 0;
+    return str;
 }
 
 char* strrepsubstrfirst(char* str, const char* substr)
@@ -258,17 +320,63 @@ char* strrepsubstrat(char* str, size_t pos, size_t len)
     return NULL;
 }
 
-char* strrepcharfirst(char* str, const char oldchar)
+char* strrepcharfirst(char* str, const char oldchar, const char newchar)
+{
+    if(str != NULL)
+    {
+        for(size_t pos = 0; str[pos] != 0; pos++)
+        {
+            if(str[pos] == oldchar)
+            {
+                str[pos] = newchar;
+                return str;
+            }
+        }
+        return str;
+    }
+    return NULL;
+}
+
+char* strrepcharall(char* str, const char oldchar, const char newchar)
+{
+    if(str != NULL)
+    {
+        for(size_t pos = 0; str[pos] != 0; pos++)
+        {
+            if(str[pos] == oldchar)
+            {
+                str[pos] = newchar;
+            }
+        }
+        return str;
+    }
+    return NULL;
+}
+
+char* strrepcharat(char* str, const char newchar, size_t pos)
+{
+    if(str != NULL)
+    {
+        if(pos < strlen(str))
+        {
+            str[pos] = newchar;
+            return str;
+        }
+    }
+    return NULL;
+}
+
+extern ListC* strsplitsubstr(char* str, const char* substr)
 {
     return NULL;
 }
 
-char* strrepcharall(char* str, const char oldchar)
+extern ListC* strsplitchar(char* str, const char ch)
 {
     return NULL;
 }
 
-char* strrepcharat(char* str, size_t pos)
+extern char* strjoin(ListC* strlist)
 {
     return NULL;
 }

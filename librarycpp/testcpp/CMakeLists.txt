@@ -2,7 +2,15 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(CoreLibTestCpp)
 
-add_definitions(-std=gnu++0x)
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions(-std=gnu++0x)
+endif()
+
+if (WIN32)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
+    add_definitions(-D_NOMINMAX)
+endif (WIN32)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -71,4 +79,8 @@ ${PROJECT_HEADER_DIR}/Variant.hpp
 )
 
 add_executable(${PROJECT_NAME}  ${SOURCE} ${HEADERS})
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} wsock32 ws2_32)
+endif (WIN32)
 

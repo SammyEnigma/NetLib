@@ -6,7 +6,6 @@
 typedef struct ListC
 {
     size_t Count;
-    NodeC* Data;
     NodeC* Head;
     NodeC* Tail;
     NodeC* IteratorPosition;

@@ -4,7 +4,15 @@ project(CoreLibCpp)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_definitions(-std=gnu++0x)
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions(-std=gnu++0x)
+endif()
+
+if (WIN32)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
+    add_definitions(-D_NOMINMAX)
+endif (WIN32)
 
 include_directories(./headers)
 
@@ -73,3 +81,6 @@ ${PROJECT_HEADER_DIR}/CoreLib.hpp
 
 add_library(${PROJECT_NAME}  ${SOURCE} ${HEADERS})
 
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} wsock32 ws2_32)
+endif (WIN32)

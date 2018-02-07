@@ -30,7 +30,7 @@ NodeC* listAddToHead(ListC* lptr, void* data, size_t sz)
 
     if(lptr->Count == 0)
     {
-        lptr->IteratorPosition = lptr->Data = lptr->Head = lptr->Tail = ptr;
+        lptr->IteratorPosition = lptr->Head = lptr->Tail = ptr;
     }
     else
     {
@@ -44,7 +44,6 @@ NodeC* listAddToHead(ListC* lptr, void* data, size_t sz)
     return ptr;
 }
 
-
 NodeC* listAddToTail(ListC* lptr, void* data, size_t sz)
 {
     if(lptr == NULL)
@@ -56,7 +55,7 @@ NodeC* listAddToTail(ListC* lptr, void* data, size_t sz)
 
     if(lptr->Count == 0)
     {
-        lptr->IteratorPosition = lptr->Data = lptr->Head = lptr->Tail = ptr;
+        lptr->IteratorPosition = lptr->Head = lptr->Tail = ptr;
     }
     else
     {
@@ -74,6 +73,11 @@ NodeC* listInsert(ListC* lptr, void* data, size_t sz, int pos)
 {
     if(lptr == NULL && pos == 0)
     {
+        if(pos > lptr->Count || pos < 0)
+        {
+            return NULL;
+        }
+
         lptr = listAllocate(lptr);
     }
     else
@@ -82,11 +86,6 @@ NodeC* listInsert(ListC* lptr, void* data, size_t sz, int pos)
         {
             return NULL;
         }
-    }
-
-    if(pos > lptr->Count || pos < 0)
-    {
-        return NULL;
     }
 
     if(pos == 0)
