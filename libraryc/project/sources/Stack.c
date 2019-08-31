@@ -1,17 +1,17 @@
-#include "StackC.h"
+#include "Stack.h"
 
 #include <string.h>
 #include <memory.h>
 #include <stdlib.h>
 
-StackC *stackAllocate(StackC* sptr)
+Stack *stackAllocate(Stack* sptr)
 {
-    sptr = (StackC*)malloc(sizeof(StackC));
-    memset(sptr, 0, sizeof(StackC));
+    sptr = (Stack*)malloc(sizeof(Stack));
+    memset(sptr, 0, sizeof(Stack));
     return sptr;
 }
 
-void stackClear(StackC* sptr)
+void Stacklear(Stack* sptr)
 {
     if(sptr == NULL)
     {
@@ -19,14 +19,14 @@ void stackClear(StackC* sptr)
     }
 }
 
-NodeC* stackPush(StackC* sptr, void* data, size_t sz)
+Node* stackPush(Stack* sptr, void* data, size_t sz)
 {
     if(sptr == NULL)
     {
         sptr = stackAllocate(sptr);
     }
 
-    NodeC* ptr = nodeAllocate(data, sz);
+    Node* ptr = nodeAllocate(data, sz);
 
     if(sptr->Count == 0)
     {
@@ -44,14 +44,14 @@ NodeC* stackPush(StackC* sptr, void* data, size_t sz)
     return ptr;
 }
 
-NodeC *stackPop(StackC* sptr)
+Node *stackPop(Stack* sptr)
 {
     if(sptr == NULL)
     {
         return NULL;
     }
 
-    NodeC* oldtail = sptr->Tail;
+    Node* oldtail = sptr->Tail;
     sptr->Tail = oldtail->Previous;
     sptr->Tail->Next = NULL;
     sptr->Count--;
@@ -60,7 +60,7 @@ NodeC *stackPop(StackC* sptr)
     return oldtail;
 }
 
-size_t stackItemCount(StackC *sptr)
+size_t stackItemCount(Stack *sptr)
 {
     if(sptr != NULL)
     {

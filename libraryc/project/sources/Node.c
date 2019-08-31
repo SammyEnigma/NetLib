@@ -1,12 +1,12 @@
-#include "NodeC.h"
+#include "Node.h"
 
 #include <string.h>
 #include <memory.h>
 #include <stdlib.h>
 
-NodeC* nodeAllocate(void* data, size_t sz)
+Node* nodeAllocate(void* data, size_t sz)
 {
-    NodeC* nd = (NodeC*)calloc(1, sizeof(NodeC));
+    Node* nd = (Node*)calloc(1, sizeof(Node));
     nd->Data = (char*)calloc(1, sz);
     nd->Size = sz;
     nd->Next = NULL;
@@ -15,13 +15,13 @@ NodeC* nodeAllocate(void* data, size_t sz)
     return nd;
 }
 
-void nodeFree(NodeC* ptr)
+void nodeFree(Node* ptr)
 {
     free(ptr->Data);
     free(ptr);
 }
 
-void nodeCopy(NodeC* dest, NodeC* orig)
+void nodeCopy(Node* dest, Node* orig)
 {
     if( (dest != NULL && dest->Data != NULL)
             && (orig != NULL && orig->Data != NULL) )
@@ -33,7 +33,7 @@ void nodeCopy(NodeC* dest, NodeC* orig)
     }
 }
 
-int nodeAreEqual(NodeC* first, NodeC* second)
+int nodeAreEqual(Node* first, Node* second)
 {
     if( (first != NULL && first->Data != NULL)
             && (second != NULL && second->Data != NULL) )
@@ -52,7 +52,7 @@ int nodeAreEqual(NodeC* first, NodeC* second)
     return 0;
 }
 
-int nodeIsGreater(NodeC* first, NodeC* second)
+int nodeIsGreater(Node* first, Node* second)
 {
     if( (first != NULL && first->Data != NULL)
             && (second != NULL && second->Data != NULL) )
@@ -71,7 +71,7 @@ int nodeIsGreater(NodeC* first, NodeC* second)
     return 0;
 }
 
-int nodeIsLess(NodeC* first, NodeC* second)
+int nodeIsLess(Node* first, Node* second)
 {
     if( (first != NULL && first->Data != NULL)
             && (second != NULL && second->Data != NULL) )

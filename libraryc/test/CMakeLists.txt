@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(CoreLibC)
+project(CoreLibTestC)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include_directories(./headers)
+include_directories(../project/headers/)
 
-set(PROJECT_SOURCE_DIR ./sources)
-set(PROJECT_HEADER_DIR ./headers)
+set(PROJECT_SOURCE_DIR ../project/sources)
+set(PROJECT_HEADER_DIR ../project/headers)
 
 set(SOURCE
 ${SOURCE}
@@ -18,7 +18,9 @@ ${PROJECT_SOURCE_DIR}/List.c
 ${PROJECT_SOURCE_DIR}/Map.c
 ${PROJECT_SOURCE_DIR}/Queue.c
 ${PROJECT_SOURCE_DIR}/Stack.c
-${PROJECT_SOURCE_DIR}/CoreLib.c
+${PROJECT_SOURCE_DIR}/Base64.c
+${PROJECT_SOURCE_DIR}/StringEx.c
+./main.c
 )
 
 set(HEADERS
@@ -30,8 +32,9 @@ ${PROJECT_HEADER_DIR}/List.h
 ${PROJECT_HEADER_DIR}/Map.h
 ${PROJECT_HEADER_DIR}/Queue.h
 ${PROJECT_HEADER_DIR}/Stack.h
-${PROJECT_HEADER_DIR}/CoreLib.h
+${PROJECT_HEADER_DIR}/Base64.h
+${PROJECT_HEADER_DIR}/StringEx.h
 )
 
-add_library(${PROJECT_NAME}  ${SOURCE} ${HEADERS})
+add_executable(${PROJECT_NAME}  ${SOURCE} ${HEADERS})
 

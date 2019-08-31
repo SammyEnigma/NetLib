@@ -1,21 +1,21 @@
-#include "KeyValueC.h"
-#include "ListC.h"
-#include "MapC.h"
-#include "NodeC.h"
+#include "KeyValue.h"
+#include "List.h"
+#include "Map.h"
+#include "Node.h"
 
 #include <stdio.h>
 #include <string.h>
 
 #define printLine printf("\n")
-void listPrintForward(ListC* lptr);
-void listPrintReverse(ListC* lptr);
-void listRandomAccess(ListC* lptr, size_t index);
+void listPrintForward(List* lptr);
+void listPrintReverse(List* lptr);
+void listRandomAccess(List* lptr, size_t index);
 
 int main(int argc, char *argv[])
 {
     int x = atoi("-123");
 
-    ListC* list = NULL;
+    List* list = NULL;
 
     list = listAllocate(list);
 
@@ -65,10 +65,10 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void listPrintForward(ListC* lptr)
+void listPrintForward(List* lptr)
 {
     printf("Forward traversal\n");
-    NodeC* ptr = NULL;
+    Node* ptr = NULL;
 
     ptr = listGetFirst(lptr);
 
@@ -84,10 +84,10 @@ void listPrintForward(ListC* lptr)
     }
 }
 
-void listPrintReverse(ListC* lptr)
+void listPrintReverse(List* lptr)
 {
     printf("Reverse traversal\n");
-    NodeC* ptr = NULL;
+    Node* ptr = NULL;
 
     ptr = listGetLast(lptr);
 
@@ -103,10 +103,10 @@ void listPrintReverse(ListC* lptr)
     }
 }
 
-void listRandomAccess(ListC* lptr, size_t index)
+void listRandomAccess(List* lptr, size_t index)
 {
     printf("Random access, index %zd\n", index);
 
-    NodeC* ptr = listGetAt(lptr, 2);
+    Node* ptr = listGetAt(lptr, 2);
     printf("%s\n", (char*)ptr->Data);
 }

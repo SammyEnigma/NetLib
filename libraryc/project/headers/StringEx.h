@@ -1,7 +1,7 @@
 #ifndef _STRING_EX_C
 #define _STRING_EX_C
 
-#include "ListC.h"
+#include "List.h"
 #include <stddef.h>
 
 #if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
@@ -49,8 +49,8 @@ extern char* strrepcharfirst(char* str, const char oldchar, const char newchar);
 extern char* strrepcharall(char* str, const char oldchar, const char newchar);
 extern char* strrepcharat(char* str, const char newchar, size_t pos);
 
-extern ListC* strsplitsubstr(char* str, const char* substr);
-extern ListC* strsplitchar(char* str, const char ch);
-extern char* strjoin(ListC *strlist);
+extern List* strsplitsubstr(char* str, const char* substr);
+extern List* strsplitchar(char* str, const char ch);
+extern char* strjoin(List *strlist);
 
 #endif

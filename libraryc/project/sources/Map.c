@@ -1,25 +1,25 @@
-#include "MapC.h"
+#include "Map.h"
 
 #include <string.h>
 #include <memory.h>
 #include <stdlib.h>
 
-void mapAllocate(MapC* mptr)
+void mapAllocate(Map* mptr)
 {
 
 }
 
-void mapClear(MapC* mptr)
+void mapClear(Map* mptr)
 {
 
 }
 
-void mapInsert(MapC* mptr, NodeC key, const NodeC data)
+void mapInsert(Map* mptr, Node key, const Node data)
 {
 
 }
 
-void mapRemove(MapC* mptr, const NodeC key)
+void mapRemove(Map* mptr, const Node key)
 {
 
 }
@@ -29,42 +29,42 @@ unsigned long mapItemCount()
 	return 0;
 }
 
-unsigned long mapIndexOf(const NodeC key)
+unsigned long mapIndexOf(const Node key)
 {
 	return 0;
 }
 
-NodeC* mapGetkey(MapC* mptr, const NodeC data)
+Node* mapGetkey(Map* mptr, const Node data)
 {
 	return NULL;
 }
 
-NodeC* mapGetvalue(MapC* mptr, const NodeC key)
+Node* mapGetvalue(Map* mptr, const Node key)
 {
 	return NULL;
 }
 
-KeyValueC* mapGetAt(MapC* mptr, unsigned int atpos)
+KeyValue* mapGetAt(Map* mptr, unsigned int atpos)
 {
 	return NULL;
 }
 
-KeyValueC* mapGetFirst(MapC* mptr)
+KeyValue* mapGetFirst(Map* mptr)
 {
 	return NULL;
 }
 
-KeyValueC* mapGetLast(MapC* mptr)
+KeyValue* mapGetLast(Map* mptr)
 {
 	return NULL;
 }
 
-KeyValueC* mapGetNext(MapC* mptr)
+KeyValue* mapGetNext(Map* mptr)
 {
 	return NULL;
 }
 
-KeyValueC* mapGetPrevious(MapC* mptr)
+KeyValue* mapGetPrevious(Map* mptr)
 {
 	return NULL;
 }

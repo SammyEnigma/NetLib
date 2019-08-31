@@ -1,4 +1,4 @@
-#include "StringExC.h"
+#include "StringEx.h"
 #include <memory.h>
 #include <stdlib.h>
 #include <string.h>
@@ -366,17 +366,17 @@ char* strrepcharat(char* str, const char newchar, size_t pos)
     return NULL;
 }
 
-extern ListC* strsplitsubstr(char* str, const char* substr)
+extern List* strsplitsubstr(char* str, const char* substr)
 {
     return NULL;
 }
 
-extern ListC* strsplitchar(char* str, const char ch)
+extern List* strsplitchar(char* str, const char ch)
 {
     return NULL;
 }
 
-extern char* strjoin(ListC* strlist)
+extern char* strjoin(List* strlist)
 {
     return NULL;
 }

@@ -1,17 +1,17 @@
-#include "QueueC.h"
+#include "Queue.h"
 
 #include <string.h>
 #include <memory.h>
 #include <stdlib.h>
 
-QueueC *queueAllocate(QueueC* qptr)
+Queue *queueAllocate(Queue* qptr)
 {
-    qptr = (QueueC*)malloc(sizeof(QueueC));
-    memset(qptr, 0, sizeof(QueueC));
+    qptr = (Queue*)malloc(sizeof(Queue));
+    memset(qptr, 0, sizeof(Queue));
     return qptr;
 }
 
-void queueClear(QueueC *qptr)
+void Queuelear(Queue *qptr)
 {
     if(qptr == NULL)
     {
@@ -19,14 +19,14 @@ void queueClear(QueueC *qptr)
     }
 }
 
-NodeC* queueEnqueue(QueueC *qptr, void* data, size_t sz)
+Node* queueEnqueue(Queue *qptr, void* data, size_t sz)
 {
     if(qptr == NULL)
     {
         qptr = queueAllocate(qptr);
     }
 
-    NodeC* ptr = nodeAllocate(data, sz);
+    Node* ptr = nodeAllocate(data, sz);
 
     if(qptr->Count == 0)
     {
@@ -44,14 +44,14 @@ NodeC* queueEnqueue(QueueC *qptr, void* data, size_t sz)
     return ptr;
 }
 
-NodeC* queueDenqueue(QueueC *qptr)
+Node* queueDenqueue(Queue *qptr)
 {
     if(qptr == NULL)
     {
         return NULL;
     }
 
-    NodeC* oldtail = qptr->Tail;
+    Node* oldtail = qptr->Tail;
     qptr->Tail = oldtail->Previous;
     qptr->Tail->Next = NULL;
     qptr->Count--;
@@ -60,7 +60,7 @@ NodeC* queueDenqueue(QueueC *qptr)
     return oldtail;
 }
 
-size_t queueItemCount(QueueC *qptr)
+size_t queueItemCount(Queue *qptr)
 {
     if(qptr != NULL)
     {
