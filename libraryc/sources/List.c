@@ -93,36 +93,39 @@ Node* listInsert(List* lptr, void* data, size_t sz, int pos)
         return listAddToHead(lptr, data, sz);
     }
 
-    if(pos == lptr->Count)
-    {
-        return listAddToTail(lptr, data, sz);
-    }
-
     int idx = 1;
 
-    Node* ptr = NULL;
+    Node* ptr = NULL;	
+	
+	if (lptr != NULL)
+	{
+		if (pos == lptr->Count)
+		{
+			return listAddToTail(lptr, data, sz);
+		}
 
-    for(Node* curptr = lptr->Head ; curptr->Next != NULL; curptr = curptr->Next, idx++)
-    {
-        if(pos == idx)
-        {
-            ptr = nodeAllocate(data, sz);
+		for(Node* curptr = lptr->Head ; curptr->Next != NULL; curptr = curptr->Next, idx++)
+		{
+			if(pos == idx)
+			{
+				ptr = nodeAllocate(data, sz);
 
-            Node* prev = curptr->Previous;
-            Node* next = curptr->Next;
+				Node* prev = curptr->Previous;
+				Node* next = curptr->Next;
 
-            prev->Next = ptr;
-            ptr->Previous = prev;
+				prev->Next = ptr;
+				ptr->Previous = prev;
 
-            next->Previous = ptr;
-            ptr->Next = next;
+				next->Previous = ptr;
+				ptr->Next = next;
 
-            lptr->Count++;
-            break;
-        }
+				lptr->Count++;
+				break;
+			}
 
-        idx++;
-    }
+			idx++;
+		}	
+	}
 
     return ptr;
 }

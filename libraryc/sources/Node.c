@@ -7,11 +7,19 @@
 Node* nodeAllocate(void* data, size_t sz)
 {
     Node* nd = (Node*)calloc(1, sizeof(Node));
-    nd->Data = (char*)calloc(1, sz);
-    nd->Size = sz;
-    nd->Next = NULL;
-    nd->Previous = NULL;
-    memcpy(nd->Data, data, sz);
+
+	if (nd != NULL)
+	{
+		nd->Data = (char*)calloc(1, sz);
+		nd->Size = sz;
+		nd->Next = NULL;
+		nd->Previous = NULL;
+
+		if (nd->Data != NULL)
+		{
+			memcpy(nd->Data, data, sz);
+		}
+	}
     return nd;
 }
 

@@ -20,9 +20,9 @@ void encodebase64(const unsigned char *data, unsigned long inputlength, char *en
 {
 	*outputlength = 4 * ((inputlength + 2) / 3);
 
-	encodedString = (char*)malloc(*outputlength + 1);
+	encodedString = (char*)malloc((size_t)(*outputlength) + 1);
 
-	memset(encodedString, 0, (*outputlength) + 1);
+	memset(encodedString, 0, (size_t)(*outputlength) + 1);
 
 	if (encodedString == NULL)
 	{

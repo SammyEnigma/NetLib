@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(CoreLibTestC)
+project(List)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include_directories(../project/headers/)
+include_directories(../../libraryc/headers/)
 
-set(PROJECT_SOURCE_DIR ../project/sources)
-set(PROJECT_HEADER_DIR ../project/headers)
+set(PROJECT_SOURCE_DIR ../../libraryc/sources)
+set(PROJECT_HEADER_DIR ../../libraryc/headers)
 
 set(SOURCE
 ${SOURCE}
