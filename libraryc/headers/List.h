@@ -12,7 +12,7 @@ typedef struct List
 }List;
 
 List* listAllocate(List* lptr);
-void Listlear(List* lptr);
+void listClear(List* lptr);
 
 Node* listAddToHead(List* lptr, void* data, size_t sz);
 Node* listAddToTail(List* lptr, void* data, size_t sz);

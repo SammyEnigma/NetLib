@@ -11,7 +11,7 @@ Stack *stackAllocate(Stack* sptr)
     return sptr;
 }
 
-void Stacklear(Stack* sptr)
+void StackClear(Stack* sptr)
 {
     if(sptr == NULL)
     {

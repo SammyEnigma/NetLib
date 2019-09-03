@@ -11,7 +11,7 @@ List *listAllocate(List* lptr)
     return lptr;
 }
 
-void Listlear(List* lptr)
+void listClear(List* lptr)
 {
     if(lptr == NULL)
     {
@@ -71,22 +71,25 @@ Node* listAddToTail(List* lptr, void* data, size_t sz)
 
 Node* listInsert(List* lptr, void* data, size_t sz, int pos)
 {
-    if(lptr == NULL && pos == 0)
-    {
-        if(pos > lptr->Count || pos < 0)
-        {
-            return NULL;
-        }
+	if (lptr == NULL)
+	{
+		if (pos == 0)
+		{
+			lptr = listAllocate(lptr);
+		}
 
-        lptr = listAllocate(lptr);
-    }
-    else
-    {
-        if(lptr == NULL && pos > 0)
-        {
-            return NULL;
-        }
-    }
+		if (pos > 0)
+		{
+			return NULL;
+		}
+	}
+	else
+	{
+		if (pos > lptr->Count || pos < 0)
+		{
+			return NULL;
+		}
+	}
 
     if(pos == 0)
     {
@@ -182,7 +185,11 @@ void listRemove(List* lptr, const Node* node)
             Node* prev = curptr->Previous;
             Node* next = curptr->Next;
 
-            prev->Next = next;
+			if (prev != NULL)
+			{
+				prev->Next = next;
+			}
+
             next->Previous = prev;
 
             nodeFree(curptr);
