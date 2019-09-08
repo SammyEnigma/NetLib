@@ -11,7 +11,7 @@ Queue *queueAllocate(Queue* qptr)
     return qptr;
 }
 
-void QueueClear(Queue *qptr)
+void queueClear(Queue *qptr)
 {
     if(qptr == NULL)
     {

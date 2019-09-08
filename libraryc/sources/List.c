@@ -306,7 +306,7 @@ size_t listItemCount(List* lptr)
     return -1;
 }
 
-int listIndexOf(List *lptr, const Node* node)
+size_t listIndexOf(List *lptr, const Node* node)
 {
     if(lptr == NULL)
     {
@@ -317,7 +317,7 @@ int listIndexOf(List *lptr, const Node* node)
 
     ptr = listGetFirst(lptr);
 
-    int idx = 0;
+	size_t idx = 0;
 
     if(ptr == node)
     {
@@ -343,7 +343,7 @@ int listIndexOf(List *lptr, const Node* node)
     return -1;
 }
 
-int listIndexOfValue(List* lptr, void* data, size_t sz)
+size_t listIndexOfValue(List* lptr, void* data, size_t sz)
 {
     if(lptr == NULL)
     {
@@ -356,7 +356,7 @@ int listIndexOfValue(List* lptr, void* data, size_t sz)
 
     ptr = listGetFirst(lptr);
 
-    int idx = 0;
+	size_t idx = 0;
 
     if(nodeAreEqual(ptr, node))
     {

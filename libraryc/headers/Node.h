@@ -11,16 +11,13 @@ typedef struct Node
     struct Node* Previous;
 }Node;
 
-Node* nodeAllocate(void* data, size_t sz);
+extern Node* nodeAllocate(void* data, size_t sz);
 
-void nodeFree(Node* ptr);
+extern void nodeFree(Node* ptr);
+extern void nodeCopy(Node* dest, Node* orig);
 
-void nodeCopy(Node* dest, Node* orig);
-
-int nodeAreEqual(Node* first, Node* second);
-
-int nodeIsGreater(Node* first, Node* second);
-
-int nodeIsLess(Node* first, Node* second);
+extern int nodeAreEqual(Node* first, Node* second);
+extern int nodeIsGreater(Node* first, Node* second);
+extern int nodeIsLess(Node* first, Node* second);
 
 #endif

@@ -9,12 +9,12 @@ typedef struct KeyValue
     Node*	Value;
 }KeyValue;
 
-void keyValueCopy(KeyValue* dest, KeyValue* orig);
+extern void keyValueCopy(KeyValue* dest, KeyValue* orig);
 
-int keyValueAreEqual(KeyValue* first, KeyValue* second);
+extern int keyValueAreEqual(KeyValue* first, KeyValue* second);
 
-int keyValueIsGreater(KeyValue* first, KeyValue* second);
+extern int keyValueIsGreater(KeyValue* first, KeyValue* second);
 
-int keyValueIsLess(KeyValue* first, KeyValue* second);
+extern int keyValueIsLess(KeyValue* first, KeyValue* second);
 
 #endif

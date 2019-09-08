@@ -12,23 +12,23 @@ typedef struct Map
 	long IteratorPosition;
 }Map;
 
-void Maplear(Map* mptr);
-void mapAllocate(Map* mptr);
+extern void mapClear(Map* mptr);
+extern void mapAllocate(Map* mptr);
 
-void mapInsert(Map* mptr, Node key, const Node data);
-void mapRemove(Map* mptr, const Node key);
+extern void mapInsert(Map* mptr, Node key, const Node data);
+extern void mapRemove(Map* mptr, const Node key);
 
-unsigned long mapItemCount();
-unsigned long mapIndexOf(const Node key);
+extern size_t mapItemCount();
+extern size_t mapIndexOf(const Node key);
 
-Node* mapGetkey(Map* mptr, const Node data);
-Node* mapGetvalue(Map* mptr, const Node key);
-KeyValue* mapGetAt(Map* mptr, unsigned int atpos);
+extern Node* mapGetkey(Map* mptr, const Node data);
+extern Node* mapGetvalue(Map* mptr, const Node key);
+extern KeyValue* mapGetAt(Map* mptr, unsigned int atpos);
 
-KeyValue* mapGetFirst(Map* mptr);
-KeyValue* mapGetLast(Map* mptr);
-KeyValue* mapGetNext(Map* mptr);
-KeyValue* mapGetPrevious(Map* mptr);
+extern KeyValue* mapGetFirst(Map* mptr);
+extern KeyValue* mapGetLast(Map* mptr);
+extern KeyValue* mapGetNext(Map* mptr);
+extern KeyValue* mapGetPrevious(Map* mptr);
 
 
 #endif

@@ -11,11 +11,12 @@ typedef struct Stack
     Node* Tail;
 }Stack;
 
-Stack* stackAllocate(Stack* sptr);
-void Stacklear(Stack* sptr);
-Node* stackPush(Stack* sptr, void* data, size_t sz);
-Node* stackPop(Stack* sptr);
-size_t stackItemCount(Stack* sptr);
+extern Stack* stackAllocate(Stack* sptr);
+extern void stackClear(Stack* sptr);
+
+extern Node* stackPush(Stack* sptr, void* data, size_t sz);
+extern Node* stackPop(Stack* sptr);
+extern size_t stackItemCount(Stack* sptr);
 
 #endif
 

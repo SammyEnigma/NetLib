@@ -327,8 +327,8 @@ namespace CoreLibrary
 			len = _DataLen - pos;
 		}
 
-		char* ptr = new char[len + 1];
-		memset(ptr, 0, len + 1);
+		char* ptr = new char[size_t(len + 1)];
+		memset(ptr, 0, size_t(len + 1));
 		memcpy(_Buffer + pos, ptr, len);
 		substr.assign(ptr, len);
 		delete[]ptr;

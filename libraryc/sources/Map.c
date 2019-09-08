@@ -24,12 +24,12 @@ void mapRemove(Map* mptr, const Node key)
 
 }
 
-unsigned long mapItemCount()
+size_t mapItemCount()
 {
 	return 0;
 }
 
-unsigned long mapIndexOf(const Node key)
+size_t mapIndexOf(const Node key)
 {
 	return 0;
 }
