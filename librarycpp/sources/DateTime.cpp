@@ -1,39 +1,32 @@
 #include "DateTime.hpp"
+#include "StringEx.hpp"
 #include <memory.h>
 #include <time.h>
 
-namespace CoreLibrary
+namespace CoreLib
 {
-	class DateTimeReference
-	{
-	public:
-		struct tm timeinfo;
-	};
-
 	DateTime::DateTime()
 	{
-		_TimeReference = new DateTimeReference();
 		time_t rawtime;
 		time(&rawtime);
-		_TimeReference->timeinfo = *localtime(&rawtime);
+		timeinfo = *localtime(&rawtime);
 	}
 
 	DateTime::DateTime(long long tinfo)
 	{
-		_TimeReference->timeinfo = *localtime((const time_t*)&tinfo);
+		timeinfo = *localtime((const time_t*)&tinfo);
 	}
 
 	DateTime::DateTime(const DateTime& other)
 	{
-		_TimeReference->timeinfo = other._TimeReference->timeinfo;
+		timeinfo = other.timeinfo;
 	}
 
-
-	DateTime::DateTime(const GenericString &str, const GenericString &format)
+	DateTime::DateTime(const std::string &str, const std::string &format)
 	{
 		time_t rawtime;
 		time(&rawtime);
-		_TimeReference->timeinfo = *localtime(&rawtime);
+		timeinfo = *localtime(&rawtime);
 
 		if (str.length() != 14)
 		{
@@ -44,61 +37,61 @@ namespace CoreLibrary
 		}
 
 		size_t pos;
-		pos = format.indexOf("yyyy");
+		pos = format.find("yyyy");
 		if (pos == -1)
 		{
-			pos = format.indexOf("yy");
+			pos = format.find("yy");
 			if (pos != -1)
 			{
-				_TimeReference->timeinfo.tm_year = str.getInt(pos, 2) + 100;
+				timeinfo.tm_year = strextractint(str, pos, 2) + 100;
 			}
 		}
 		else
 		{
-			_TimeReference->timeinfo.tm_year = str.getInt(pos, 4) - 1900;
+			timeinfo.tm_year = strextractint(str, pos, 4) - 1900;
 		}
 
-		pos = format.indexOf("MM");
+		pos = format.find("MM");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_mon = str.getInt(pos, 2) - 1;
+			timeinfo.tm_mon = strextractint(str, pos, 2) - 1;
 		}
 
-		pos = format.indexOf("dd");
+		pos = format.find("dd");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_mday = str.getInt(pos, 2);
+			timeinfo.tm_mday = strextractint(str, pos, 2);
 		}
 
-		pos = format.indexOf("hh");
+		pos = format.find("hh");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_hour = str.getInt(pos, 2);
+			timeinfo.tm_hour = strextractint(str, pos, 2);
 		}
 
-		pos = format.indexOf("mm");
+		pos = format.find("mm");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_min = str.getInt(pos, 2);
+			timeinfo.tm_min = strextractint(str, pos, 2);
 		}
 
-		pos = format.indexOf("ss");
+		pos = format.find("ss");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_sec = str.getInt(pos, 2);
+			timeinfo.tm_sec = strextractint(str, pos, 2);
 		}
 	}
 
-	void DateTime::buildFromTime(long long tinfo)
+	void DateTime::buildFromTime(const time_t& tinfo)
 	{
-		_TimeReference->timeinfo = *localtime((const time_t*)&tinfo);
+		timeinfo = *localtime(&tinfo);
 	}
 
-	void DateTime::buildFromString(const GenericString &str, const GenericString &format)
+	void DateTime::buildFromString(const std::string &str, const std::string &format)
 	{
 		time_t rawtime;
 		time(&rawtime);
-		_TimeReference->timeinfo = *localtime(&rawtime);
+		timeinfo = *localtime(&rawtime);
 
 		if (str.length() != 14)
 		{
@@ -109,66 +102,65 @@ namespace CoreLibrary
 		}
 
 		size_t pos;
-		pos = format.indexOf("yyyy");
+		pos = format.find("yyyy");
 		if (pos == -1)
 		{
-			pos = format.indexOf("yy");
+			pos = format.find("yy");
 			if (pos != -1)
 			{
-				_TimeReference->timeinfo.tm_year = str.getInt(pos, 2) + 100;
+				timeinfo.tm_year = strextractint(str, pos, 2) + 100;
 			}
 		}
 		else
 		{
-			_TimeReference->timeinfo.tm_year = str.getInt(pos, 4) - 1900;
+			timeinfo.tm_year = strextractint(str, pos, 4) - 1900;
 		}
 
-		pos = format.indexOf("MM");
+		pos = format.find("MM");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_mon = str.getInt(pos, 2) - 1;
+			timeinfo.tm_mon = strextractint(str, pos, 2) - 1;
 		}
 
-		pos = format.indexOf("dd");
+		pos = format.find("dd");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_mday = str.getInt(pos, 2);
+			timeinfo.tm_mday = strextractint(str, pos, 2);
 		}
 
-		pos = format.indexOf("hh");
+		pos = format.find("hh");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_hour = str.getInt(pos, 2);
+			timeinfo.tm_hour = strextractint(str, pos, 2);
 		}
 
-		pos = format.indexOf("mm");
+		pos = format.find("mm");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_min = str.getInt(pos, 2);
+			timeinfo.tm_min = strextractint(str, pos, 2);
 		}
 
-		pos = format.indexOf("ss");
+		pos = format.find("ss");
 		if (pos != -1)
 		{
-			_TimeReference->timeinfo.tm_sec = str.getInt(pos, 2);
+			timeinfo.tm_sec = strextractint(str, pos, 2);
 		}
 	}
 
 	DateTime::~DateTime()
 	{
-		delete _TimeReference;
 	}
 
 	void DateTime::operator=(const DateTime& other)
 	{
-		_TimeReference->timeinfo = other._TimeReference->timeinfo;
+		timeinfo = other.timeinfo;
 		return;
 	}
 
 	bool DateTime::operator!=(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		if (t1 != t2)
 		{
@@ -179,8 +171,8 @@ namespace CoreLibrary
 
 	bool DateTime::operator==(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		if (t1 == t2)
 		{
@@ -191,8 +183,8 @@ namespace CoreLibrary
 
 	bool DateTime::operator>=(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		if (t1 >= t2)
 		{
@@ -203,8 +195,8 @@ namespace CoreLibrary
 
 	bool DateTime::operator<=(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		if (t1 <= t2)
 		{
@@ -215,8 +207,8 @@ namespace CoreLibrary
 
 	bool DateTime::operator>(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		if (t1 > t2)
 		{
@@ -227,8 +219,8 @@ namespace CoreLibrary
 
 	bool DateTime::operator<(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		if (t1 < t2)
 		{
@@ -239,20 +231,20 @@ namespace CoreLibrary
 
 	DateTime& DateTime::operator+=(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		t1 = t1 + t2;
 
-		_TimeReference->timeinfo = *localtime(&t1);
+		timeinfo = *localtime(&t1);
 
 		return *this;
 	}
 
 	DateTime DateTime::operator+(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		time_t t3 = t1 + t2;
 
@@ -261,100 +253,99 @@ namespace CoreLibrary
 
 	DateTime& DateTime::operator-=(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		t1 = t1 - t2;
 
-		_TimeReference->timeinfo = *localtime(&t1);
+		timeinfo = *localtime(&t1);
 
 		return *this;
 	}
 
 	DateTime DateTime::operator-(const DateTime& other)
 	{
-		time_t t1 = mktime(&_TimeReference->timeinfo);
-		time_t t2 = mktime((tm*)&other._TimeReference->timeinfo);
+		time_t t1 = mktime(&timeinfo);
+		time_t t2 = mktime((tm*)&other.timeinfo);
 
 		time_t t3 = t1 - t2;
 
 		return DateTime(t3);
 	}
 
-	long long DateTime::getTime() const
+	time_t DateTime::getTime()
 	{
-		time_t t = mktime(&_TimeReference->timeinfo);
-		return (long long)t;
+		time_t t = mktime(&timeinfo);
+		return t;
 	}
 
-
-	GenericString DateTime::getDateString(const char *format)
+	std::string DateTime::getDateString(const std::string& format)
 	{
-		GenericString str = format;
+		std::string str = format;
 		size_t pos = 0;
 		bool ap = false;
 
 		char buffer[256];
 		memset((char*)&buffer[0], 0, 256);
 
-		pos = str.indexOf("ss");
+		pos = str.find("ss");
 		if (pos != -1)
 		{
-			str.replace("ss", "%S");
+			strreplace(str, "ss", "%S");
 		}
 
-		pos = str.indexOf("mm");
+		pos = str.find("mm");
 		if (pos != -1)
 		{
-			str.replace("mm", "%M");
+			strreplace(str, "mm", "%M");
 		}
 
-		pos = str.indexOf("hh");
+		pos = str.find("hh");
 		if (pos != -1)
 		{
-			str.replace("hh", "%H");
+			strreplace(str, "hh", "%H");
 		}
 		else
 		{
-			pos = str.indexOf("h");
+			pos = str.find("h");
 			if (pos != -1)
 			{
-				str.replace("h", "%I");
+				strreplace(str, "h", "%I");
 				ap = true;
 			}
 		}
 
-		pos = str.indexOf("dd");
+		pos = str.find("dd");
 		if (pos != -1)
 		{
-			str.replace("dd", "%d");
+			strreplace(str, "dd", "%d");
 		}
 
-		pos = str.indexOf("MMMM");
+		pos = str.find("MMMM");
 		if (pos != -1)
 		{
-			str.replace("MMMM", "%B");
+			strreplace(str, "MMMM", "%B");
 		}
 		else
 		{
-			pos = str.indexOf("MM");
+			pos = str.find("MM");
 			if (pos != -1)
 			{
-				str.replace("MM", "%m");
+				strreplace(str, "MM", "%m");
 			}
 		}
 
-		pos = str.indexOf("yyyy");
+		pos = str.find("yyyy");
 		if (pos != -1)
 		{
-			str.replace("yyyy", "%Y");
+			strreplace(str, "yyyy", "%Y");
 		}
 		else
 		{
-			pos = str.indexOf("yy");
+			pos = str.find("yy");
 			if (pos != -1)
 			{
-				str.replace("yy", "%y");
+				strreplace(str, "yy", "%y");
 			}
 		}
 
@@ -364,83 +355,83 @@ namespace CoreLibrary
 
 		}
 
-		if (_TimeReference->timeinfo.tm_year < 100)
+		if (timeinfo.tm_year < 100)
 		{
-			_TimeReference->timeinfo.tm_year += 100;
+			timeinfo.tm_year += 100;
 		}
 
-		strftime(buffer, 256, str.buffer(), &_TimeReference->timeinfo);
+		strftime(buffer, 256, str.c_str(), &timeinfo);
 
 		return buffer;
 	}
 
-	GenericString DateTime::getDateString()
+	std::string DateTime::getDateString()
 	{
-		GenericString str = "yyyy/MM/dd hh:mm:ss";
+		std::string str = "yyyy/MM/dd hh:mm:ss";
 		size_t pos = 0;
 		bool ap = false;
 
 		char buffer[256];
 		memset((char*)&buffer[0], 0, 256);
 
-		pos = str.indexOf("ss");
+		pos = str.find("ss");
 		if (pos != -1)
 		{
-			str.replace("ss", "%S");
+			strreplace(str, "ss", "%S");
 		}
 
-		pos = str.indexOf("mm");
+		pos = str.find("mm");
 		if (pos != -1)
 		{
-			str.replace("mm", "%M");
+			strreplace(str, "mm", "%M");
 		}
 
-		pos = str.indexOf("hh");
+		pos = str.find("hh");
 		if (pos != -1)
 		{
-			str.replace("hh", "%H");
+			strreplace(str, "hh", "%H");
 		}
 		else
 		{
-			pos = str.indexOf("h");
+			pos = str.find("h");
 			if (pos != -1)
 			{
-				str.replace("h", "%I");
+				strreplace(str, "h", "%I");
 				ap = true;
 			}
 		}
 
-		pos = str.indexOf("dd");
+		pos = str.find("dd");
 		if (pos != -1)
 		{
-			str.replace("dd", "%d");
+			strreplace(str, "dd", "%d");
 		}
 
-		pos = str.indexOf("MMMM");
+		pos = str.find("MMMM");
 		if (pos != -1)
 		{
-			str.replace("MMMM", "%B");
+			strreplace(str, "MMMM", "%B");
 		}
 		else
 		{
-			pos = str.indexOf("MM");
+			pos = str.find("MM");
 			if (pos != -1)
 			{
-				str.replace("MM", "%m");
+				strreplace(str, "MM", "%m");
 			}
 		}
 
-		pos = str.indexOf("yyyy");
+		pos = str.find("yyyy");
 		if (pos != -1)
 		{
-			str.replace("yyyy", "%Y");
+			strreplace(str, "yyyy", "%Y");
 		}
 		else
 		{
-			pos = str.indexOf("yy");
+			pos = str.find("yy");
 			if (pos != -1)
 			{
-				str.replace("yy", "%y");
+				strreplace(str, "yy", "%y");
 			}
 		}
 
@@ -450,12 +441,12 @@ namespace CoreLibrary
 
 		}
 
-		if (_TimeReference->timeinfo.tm_year < 100)
+		if (timeinfo.tm_year < 100)
 		{
-			_TimeReference->timeinfo.tm_year += 100;
+			timeinfo.tm_year += 100;
 		}
 
-		strftime(buffer, 256, str.buffer(), &_TimeReference->timeinfo);
+		strftime(buffer, 256, str.c_str(), &timeinfo);
 
 		return buffer;
 	}
@@ -483,68 +474,68 @@ namespace CoreLibrary
 		//t = t + val;
 		//timeinfo = *localtime(&t);
 
-		_TimeReference->timeinfo.tm_sec = _TimeReference->timeinfo.tm_sec + val;
-		time_t t = mktime(&_TimeReference->timeinfo);
-		_TimeReference->timeinfo = *localtime(&t);
+		timeinfo.tm_sec = timeinfo.tm_sec + val;
+		time_t t = mktime(&timeinfo);
+		timeinfo = *localtime(&t);
 	}
 
 	int DateTime::getDays()
 	{
-		return _TimeReference->timeinfo.tm_mday;
+		return timeinfo.tm_mday;
 	}
 
 	int DateTime::getMonths()
 	{
-		return _TimeReference->timeinfo.tm_mon + 1;
+		return timeinfo.tm_mon + 1;
 	}
 
 	int DateTime::getYears()
 	{
-		return _TimeReference->timeinfo.tm_year + 1900;
+		return timeinfo.tm_year + 1900;
 	}
 
 	int DateTime::getHours()
 	{
-		return _TimeReference->timeinfo.tm_hour;
+		return timeinfo.tm_hour;
 	}
 
 	int DateTime::getMinutes()
 	{
-		return _TimeReference->timeinfo.tm_min;
+		return timeinfo.tm_min;
 	}
 
 	int DateTime::getSeconds()
 	{
-		return _TimeReference->timeinfo.tm_sec;
+		return timeinfo.tm_sec;
 	}
 
 	void DateTime::setDay(int val)
 	{
-		_TimeReference->timeinfo.tm_mday = val;
+		timeinfo.tm_mday = val;
 	}
 
 	void DateTime::setMonth(int val)
 	{
-		_TimeReference->timeinfo.tm_mon = val - 1;
+		timeinfo.tm_mon = val - 1;
 	}
 
 	void DateTime::setYear(int val)
 	{
-		_TimeReference->timeinfo.tm_year = val - 1900;
+		timeinfo.tm_year = val - 1900;
 	}
 
 	void DateTime::setHour(int val)
 	{
-		_TimeReference->timeinfo.tm_hour = val;
+		timeinfo.tm_hour = val;
 	}
 
 	void DateTime::setMinute(int val)
 	{
-		_TimeReference->timeinfo.tm_min = val;
+		timeinfo.tm_min = val;
 	}
 
 	void DateTime::setSecond(int val)
 	{
-		_TimeReference->timeinfo.tm_sec = val;
+		timeinfo.tm_sec = val;
 	}
 }

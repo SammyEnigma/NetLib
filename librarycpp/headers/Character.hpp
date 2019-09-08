@@ -1,7 +1,7 @@
 #ifndef _CHARACTER
 #define _CHARACTER
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	class Character
 	{

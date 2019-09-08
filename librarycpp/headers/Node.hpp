@@ -1,7 +1,7 @@
 #ifndef _NODE
 #define _NODE
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	template <typename V>
 	class Node

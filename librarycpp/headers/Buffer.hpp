@@ -1,9 +1,9 @@
 #ifndef _BUFFER
 #define _BUFFER
 
-#include "List.hpp"
+#include <list>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	class Buffer
 	{
@@ -38,8 +38,8 @@ namespace CoreLibrary
 		void getKeyValuePair(Buffer &key, Buffer &value, const char delimiter);
 		void getKeyValuePair(Buffer &key, Buffer &value, const Buffer &delimiter);
 
-		void getSubSegmentList(List<Buffer> &tokens, const char delimiter);
-		void getSubSegmentList(List<Buffer> &tokens, const Buffer &delimiter);
+		void getSubSegmentList(std::list<Buffer> &tokens, const char delimiter);
+		void getSubSegmentList(std::list<Buffer> &tokens, const Buffer &delimiter);
 
 		void operator=(const Buffer& other);
 		bool operator!=(const Buffer& other);

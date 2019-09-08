@@ -1,6 +1,6 @@
 #include "Character.hpp"
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	Character::Character()
 	{

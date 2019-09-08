@@ -1,4 +1,5 @@
 #include "ABNFMessage.hpp"
+#include "StringEx.hpp"
 #include <stdio.h>
 
 #if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
@@ -7,7 +8,7 @@
     #include <string.h>
 #endif
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	ABNFMessage::ABNFMessage()
 	{
@@ -88,27 +89,27 @@ namespace CoreLibrary
 
 	const char*	ABNFMessage::getRequest()
 	{
-		return _Request.buffer();
+		return _Request.c_str();
 	}
 
 	const char*	ABNFMessage::getProtocol()
 	{
-		return _Protocol.buffer();
+		return _Protocol.c_str();
 	}
 
 	const char*	ABNFMessage::getURL()
 	{
-		return _URL.buffer();
+		return _URL.c_str();
 	}
 
 	const char*	ABNFMessage::getVersion()
 	{
-		return _Version.buffer();
+		return _Version.c_str();
 	}
 
 	const char*	ABNFMessage::getResponseText()
 	{
-		return _ResponseText.buffer();
+		return _ResponseText.c_str();
 	}
 
 	long ABNFMessage::getResponseCode()
@@ -132,9 +133,9 @@ namespace CoreLibrary
 	}
 
 
-	void ABNFMessage::getFieldValue(const char* fieldName, GenericString &value)
+	void ABNFMessage::getFieldValue(const char* fieldName, std::string &value)
 	{
-		char *fieldval = (char*)_KeyValueList.value(fieldName)->buffer();
+		char *fieldval = (char*)_KeyValueList.value(fieldName)->c_str();
 		if (fieldval == nullptr)
 		{
 			value.clear();
@@ -150,24 +151,24 @@ namespace CoreLibrary
 
 	bool ABNFMessage::deSerialize()
 	{
-		GenericString fieldValueParams;
-		GenericString field, value;
+		std::string fieldValueParams;
+		std::string field, value;
 
 		getLine(_MessageLine);
-		decodeMessageIdentificationLine(_MessageLine.buffer());
+		decodeMessageIdentificationLine(_MessageLine.c_str());
 
 		while (true)
 		{
 			getLine(fieldValueParams);
-			processLine(fieldValueParams.buffer(), field, value);
+			processLine(fieldValueParams.c_str(), field, value);
 			if (field.length() < 1)
 			{
 				break;
 			}
 
-			addHeader(field.buffer(), value.buffer());
+			addHeader(field.c_str(), value.c_str());
 
-			if (memcmp(field.buffer(), "Content-Length", 14) == 0)
+			if (memcmp(field.c_str(), "Content-Length", 14) == 0)
 			{
 				if (value.getInt() > 0)
 				{
@@ -189,7 +190,7 @@ namespace CoreLibrary
 		return _HasContent;
 	}
 
-	void ABNFMessage::getLine(GenericString &line)
+	void ABNFMessage::getLine(std::string &line)
 	{
 		if (_RequestBuffer.length() < 1)
 		{
@@ -197,7 +198,7 @@ namespace CoreLibrary
 			return;
 		}
 
-		GenericString next;
+		std::string next;
 
 		int pos = _RequestBuffer.indexOf("\r\n");
 
@@ -213,9 +214,9 @@ namespace CoreLibrary
 		_RequestBuffer = next;
 	}
 
-	void ABNFMessage::processLine(const char *line, GenericString &field, GenericString &value)
+	void ABNFMessage::processLine(const char *line, std::string &field, std::string &value)
 	{
-		GenericString temp(line);
+		std::string temp(line);
 
 		int delimeterpos = temp.indexOf(':');
 
@@ -251,7 +252,7 @@ namespace CoreLibrary
 		_MessageType = Request;
 
 		int ws = 0;
-		GenericString token1, token2, token3;
+		std::string token1, token2, token3;
 
 		for (int index = 0; requestLine[index] != 0; index++)
 		{
@@ -303,11 +304,11 @@ namespace CoreLibrary
 		memset(tempBuffer, 0, 1024);
 		if (_MessageType == Response)
 		{
-			sprintf(tempBuffer, "%s/%s %d %s\r\n", _Protocol.buffer(), _Version.buffer(), _ResponseCode, _ResponseText.buffer());
+			sprintf(tempBuffer, "%s/%s %d %s\r\n", _Protocol.c_str(), _Version.c_str(), _ResponseCode, _ResponseText.c_str());
 		}
 		else
 		{
-			sprintf(tempBuffer, "%s %s %s/%s\r\n", _Request.buffer(), _URL.buffer(), _Protocol.buffer(), _Version.buffer());
+			sprintf(tempBuffer, "%s %s %s/%s\r\n", _Request.c_str(), _URL.c_str(), _Protocol.c_str(), _Version.c_str());
 		}
 		_MessageLine = tempBuffer;
 	}
@@ -337,7 +338,7 @@ namespace CoreLibrary
 		_KeyValueList.insert(field, value);
 	}
 
-	void ABNFMessage::serialize(GenericString &abnfString)
+	void ABNFMessage::serialize(std::string &abnfString)
 	{
 		encodeMessageIdentificationLine();
 

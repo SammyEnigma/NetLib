@@ -1,11 +1,11 @@
-#include "GenericString.hpp"
+#include "String.hpp"
 #include "Base64.hpp"
 #include "Character.hpp"
 //#include <memory.h>
 //#include <stdlib.h>
 //#include <stdio.h>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 #if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
 #define strtoull(str, endptr, base) _strtoui64(str, endptr, base)
@@ -31,7 +31,7 @@ namespace CoreLibrary
 	int searchForSubstring(char *pat, char *txt);
 	void computeLPSArray(char *pat, int M, int *lps);
 
-	GenericString::GenericString()
+	String::String()
 	{
 		_Buffer = nullptr;
 		_BufferLen = 0;
@@ -43,7 +43,7 @@ namespace CoreLibrary
 		stringReset(_Buffer,_BufferLen);
 	}
 
-	GenericString::GenericString(long len)
+	String::String(long len)
 	{
 		_StringLen = len;
 		_BufferLen = numPages(_StringLen + 1)*PAGE_SIZE;
@@ -51,7 +51,7 @@ namespace CoreLibrary
 		stringReset(_Buffer, _BufferLen);
 	}
 
-	GenericString::GenericString(const GenericString &obj)
+	String::String(const String &obj)
 	{
 		if (obj._StringLen > 0 && obj._Buffer != nullptr)
 		{
@@ -63,7 +63,7 @@ namespace CoreLibrary
 		}
 	}
 
-	GenericString::GenericString(const GenericString *ptr)
+	String::String(const String *ptr)
 	{
 		if (ptr != nullptr)
 		{
@@ -78,7 +78,7 @@ namespace CoreLibrary
 		}
 	}
 
-	GenericString::GenericString(const wchar_t* ptr)
+	String::String(const wchar_t* ptr)
 	{
 		if (ptr != nullptr)
 		{
@@ -95,7 +95,7 @@ namespace CoreLibrary
 		}
 	}
 
-	GenericString::GenericString(const char* ptr)
+	String::String(const char* ptr)
 	{
 		if (ptr != nullptr)
 		{
@@ -107,7 +107,7 @@ namespace CoreLibrary
 		}
 	}
 
-	GenericString::GenericString(const char* ptr, int startpos, int endpos)
+	String::String(const char* ptr, int startpos, int endpos)
 	{
 		if (ptr != nullptr)
 		{
@@ -119,7 +119,7 @@ namespace CoreLibrary
 		}
 	}
 
-	GenericString::~GenericString()
+	String::~String()
 	{
 		if (_Buffer != nullptr)
 		{
@@ -131,12 +131,12 @@ namespace CoreLibrary
 		_StringLen = 0;
 	}
 
-	long GenericString::length(const char* ptr)
+	long String::length(const char* ptr)
 	{
 		return stringLen(ptr);
 	}
 
-	bool GenericString::operator!=(const GenericString& other)
+	bool String::operator!=(const String& other)
 	{
 		int complen = (_StringLen > other._StringLen) ? other._StringLen : _StringLen;
 
@@ -148,7 +148,7 @@ namespace CoreLibrary
 		return false;
 	}
 
-	bool GenericString::operator==(const GenericString& other)
+	bool String::operator==(const String& other)
 	{
 		int complen = (_StringLen > other._StringLen) ? other._StringLen : _StringLen;
 
@@ -160,7 +160,7 @@ namespace CoreLibrary
 		return false;
 	}
 
-	bool GenericString::operator>(const GenericString& other)
+	bool String::operator>(const String& other)
 	{
 		int complen = (_StringLen > other._StringLen) ? other._StringLen : _StringLen;
 
@@ -172,7 +172,7 @@ namespace CoreLibrary
 		return false;
 	}
 
-	bool GenericString::operator<(const GenericString& other)
+	bool String::operator<(const String& other)
 	{
 		int complen = (_StringLen > other._StringLen) ? other._StringLen : _StringLen;
 
@@ -184,7 +184,7 @@ namespace CoreLibrary
 		return false;
 	}
 
-	void GenericString::operator=(const GenericString& other)
+	void String::operator=(const String& other)
 	{
 		clear();
 		_StringLen = other._StringLen;
@@ -197,7 +197,7 @@ namespace CoreLibrary
 		return;
 	}
 
-	GenericString& GenericString::operator+=(const GenericString& other)
+	String& String::operator+=(const String& other)
 	{
 		int len = _StringLen + other._StringLen;
 
@@ -223,7 +223,7 @@ namespace CoreLibrary
 		return *this;
 	}
 
-	GenericString& GenericString::operator+=(const char& other)
+	String& String::operator+=(const char& other)
 	{
 		int len = _StringLen + 1;
 
@@ -250,7 +250,7 @@ namespace CoreLibrary
 		return *this;
 	}
 
-	GenericString& GenericString::operator+=(const long& other)
+	String& String::operator+=(const long& other)
 	{
 		char tempbuffer[32] = { 0 };
 		convertToString(&tempbuffer[0], (long long)other);
@@ -279,7 +279,7 @@ namespace CoreLibrary
 		return *this;
 	}
 
-	GenericString& GenericString::operator+=(const int& other)
+	String& String::operator+=(const int& other)
 	{
 		char tempbuffer[32] = { 0 };
 		convertToString(&tempbuffer[0], (long long)other);
@@ -308,7 +308,7 @@ namespace CoreLibrary
 		return *this;
 	}
 
-	GenericString& GenericString::operator+=(const double& other)
+	String& String::operator+=(const double& other)
 	{
 		char tempbuffer[32] = { 0 };
 		convertToString(&tempbuffer[0], (double)other);
@@ -337,9 +337,9 @@ namespace CoreLibrary
 		return *this;
 	}
 
-	GenericString GenericString::operator+(const GenericString& other)
+	String String::operator+(const String& other)
 	{
-		GenericString returnvalue;
+		String returnvalue;
 
 		returnvalue._StringLen = _StringLen + other._StringLen;
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
@@ -351,9 +351,9 @@ namespace CoreLibrary
 		return returnvalue;
 	}
 
-	GenericString GenericString::operator+(const char& other)
+	String String::operator+(const char& other)
 	{
-		GenericString returnvalue;
+		String returnvalue;
 
 		returnvalue._StringLen = _StringLen + 1;
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
@@ -365,12 +365,12 @@ namespace CoreLibrary
 		return returnvalue;
 	}
 
-	GenericString GenericString::operator+(const long& other)
+	String String::operator+(const long& other)
 	{
 		char tempbuffer[32] = { 0 };
 		convertToString(&tempbuffer[0], (long long)other);
 
-		GenericString returnvalue;
+		String returnvalue;
 
 		returnvalue._StringLen = _StringLen + stringLen(tempbuffer);
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
@@ -382,12 +382,12 @@ namespace CoreLibrary
 		return returnvalue;
 	}
 
-	GenericString GenericString::operator+(const int& other)
+	String String::operator+(const int& other)
 	{
 		char tempbuffer[32] = { 0 };
 		convertToString(&tempbuffer[0], (long long)other);
 
-		GenericString returnvalue;
+		String returnvalue;
 
 		returnvalue._StringLen = _StringLen + stringLen(tempbuffer);
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
@@ -399,12 +399,12 @@ namespace CoreLibrary
 		return returnvalue;
 	}
 
-	GenericString GenericString::operator+(const double& other)
+	String String::operator+(const double& other)
 	{
 		char tempbuffer[32] = { 0 };
 		convertToString(&tempbuffer[0], (double)other);
 
-		GenericString returnvalue;
+		String returnvalue;
 
 		returnvalue._StringLen = _StringLen + stringLen(tempbuffer);
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
@@ -416,17 +416,17 @@ namespace CoreLibrary
 		return returnvalue;
 	}
 
-	char GenericString::getAt(const int atpos) const
+	char String::getAt(const int atpos) const
 	{
 		return _Buffer[atpos];
 	}
 
-	void GenericString::SetAt(const int atpos, const char ch)
+	void String::SetAt(const int atpos, const char ch)
 	{
 		_Buffer[atpos] = ch;
 	}
 
-	char& GenericString::operator[](const long index)
+	char& String::operator[](const long index)
 	{
 		if (index < 0 || index >(_StringLen - 1))
 		{
@@ -436,7 +436,7 @@ namespace CoreLibrary
 		return _Buffer[index];
 	}
 
-	unsigned char * GenericString::fromBase64()
+	unsigned char * String::fromBase64()
 	{
 		Base64 b64;
 
@@ -448,17 +448,17 @@ namespace CoreLibrary
 		return decodedbuffer;
 	}
 
-	char* GenericString::toBase64()
+	char* String::toBase64()
 	{
 		return nullptr;
 	}
 
-	wchar_t* GenericString::toWideCharacter()
+	wchar_t* String::toWideCharacter()
 	{
 		return nullptr;
 	}
 
-	void GenericString::clear()
+	void String::clear()
 	{
 		if(_BufferLen > PAGE_SIZE)
 		{ 
@@ -475,7 +475,7 @@ namespace CoreLibrary
 		stringReset(_Buffer, _BufferLen);
 	}
 
-	void GenericString::assign(const char *ptr)
+	void String::assign(const char *ptr)
 	{
 		if (ptr != nullptr)
 		{
@@ -488,7 +488,7 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::assign(const char *ptr, int startpos, int endpos)
+	void String::assign(const char *ptr, int startpos, int endpos)
 	{
 		if (ptr != nullptr)
 		{
@@ -501,22 +501,22 @@ namespace CoreLibrary
 		}
 	}
 
-	long GenericString::length() const
+	long String::length() const
 	{
 		return _StringLen;
 	}
 
-	const char* GenericString::buffer() const
+	const char* String::buffer() const
 	{
 		return _Buffer;
 	}
 
-	int GenericString::indexOf(const GenericString &obj, int startpos) const
+	int String::indexOf(const String &obj, int startpos) const
 	{
 		return indexOf(obj._Buffer, startpos);
 	}
 
-	int GenericString::indexOf(const char* ptr, int startpos) const
+	int String::indexOf(const char* ptr, int startpos) const
 	{
 		int result = -1;
 
@@ -536,7 +536,7 @@ namespace CoreLibrary
 		return result;
 	}
 
-	int GenericString::indexOf(const char ch, int startpos) const
+	int String::indexOf(const char ch, int startpos) const
 	{
 		for (int ctr = startpos; _Buffer[ctr] != '\0'; ctr++)
 		{
@@ -549,7 +549,7 @@ namespace CoreLibrary
 		return -1;
 	}
 
-	void GenericString::getSubString(int pos, int len, GenericString &substr) const
+	void String::getSubString(int pos, int len, String &substr) const
 	{
 		if (_StringLen - pos < len)
 		{
@@ -563,84 +563,84 @@ namespace CoreLibrary
 		delete[]ptr;
 	}
 
-	int GenericString::getInt(int pos, int len) const
+	int String::getInt(int pos, int len) const
 	{
 		if (_StringLen - pos < len)
 		{
 			len = _StringLen - pos;
 		}
 
-		GenericString str;
+		String str;
 
 		str.assign(_Buffer, pos, pos + len);
 		int res = convertToInt(str.buffer());
 		return res;
 	}
 
-	long GenericString::getLong(int pos, int len) const
+	long String::getLong(int pos, int len) const
 	{
 		if (_StringLen - pos < len)
 		{
 			len = _StringLen - pos;
 		}
 
-		GenericString str;
+		String str;
 
 		str.assign(_Buffer, pos, pos + len);
 		long res = convertToLong(str.buffer());
 		return res;
 	}
 
-	long long GenericString::getLongLong(int pos, int len) const
+	long long String::getLongLong(int pos, int len) const
 	{
 		if (_StringLen - pos < len)
 		{
 			len = _StringLen - pos;
 		}
 
-		GenericString str;
+		String str;
 
 		str.assign(_Buffer, pos, pos + len);
 		long long res = convertToLongLong(str.buffer());
 		return res;
 	}
 
-	unsigned int GenericString::getUnsignedInt(int pos, int len) const
+	unsigned int String::getUnsignedInt(int pos, int len) const
 	{
 		if (_StringLen - pos < len)
 		{
 			len = _StringLen - pos;
 		}
 
-		GenericString str;
+		String str;
 
 		str.assign(_Buffer, pos, pos + len);
 		unsigned int res = convertToInt(str.buffer());
 		return res;
 	}
 
-	unsigned long GenericString::getUnsignedLong(int pos, int len) const
+	unsigned long String::getUnsignedLong(int pos, int len) const
 	{
 		if (_StringLen - pos < len)
 		{
 			len = _StringLen - pos;
 		}
 
-		GenericString str;
+		String str;
 
 		str.assign(_Buffer, pos, pos + len);
 		unsigned long res = convertToLong(str.buffer());
 		return res;
 	}
 
-	unsigned long long GenericString::getUnsignedLongLong(int pos, int len) const
+	unsigned long long String::getUnsignedLongLong(int pos, int len) const
 	{
 		if (_StringLen - pos < len)
 		{
 			len = _StringLen - pos;
 		}
 
-		GenericString str;
+		String str;
 
 		str.assign(_Buffer, pos, pos + len);
 		unsigned long long res = convertToLongLong(str.buffer());
@@ -648,61 +648,61 @@ namespace CoreLibrary
 	}
 
 
-	double GenericString::getDouble(int pos, int len) const
+	double String::getDouble(int pos, int len) const
 	{
 		if (_StringLen - pos < len)
 		{
 			len = _StringLen - pos;
 		}
 
-		GenericString str;
+		String str;
 
 		str.assign(_Buffer, pos, pos + len);
 		double res = convertToLDouble(str.buffer());
 		return res;
 	}
 
-	int GenericString::getInt() const
+	int String::getInt() const
 	{
 		return getInt(0, _StringLen);
 	}
 
-	long GenericString::getLong() const
+	long String::getLong() const
 	{
 		return getLong(0, _StringLen);
 	}
 
-	long long GenericString::getLongLong() const
+	long long String::getLongLong() const
 	{
 		return getLongLong(0, _StringLen);
 	}
 
-	unsigned int GenericString::getUnsignedInt() const
+	unsigned int String::getUnsignedInt() const
 	{
 		return getUnsignedInt(0, _StringLen);
 	}
 
-	unsigned long GenericString::getUnsignedLong() const
+	unsigned long String::getUnsignedLong() const
 	{
 		return getUnsignedLong(0, _StringLen);
 	}
 
-	unsigned long long GenericString::getUnsignedLongLong() const
+	unsigned long long String::getUnsignedLongLong() const
 	{
 		return getUnsignedLongLong(0, _StringLen);
 	}
 
-	double GenericString::getDouble() const
+	double String::getDouble() const
 	{
 		return getDouble(0, _StringLen);
 	}
 
-	int GenericString::countOf(const GenericString &obj) const
+	int String::countOf(const String &obj) const
 	{
 		return countOf(obj._Buffer);
 	}
 
-	int GenericString::countOf(const char* ptr) const
+	int String::countOf(const char* ptr) const
 	{
 		int count = 0;
 		int pos = 0;
@@ -724,7 +724,7 @@ namespace CoreLibrary
 		return count;
 	}
 
-	int GenericString::countOf(const char ch) const
+	int String::countOf(const char ch) const
 	{
 		int c = 0;
 		for (int i = 0; _Buffer[i] != '\0'; i++)
@@ -738,7 +738,7 @@ namespace CoreLibrary
 		return c;
 	}
 
-	void GenericString::toLower()
+	void String::toLower()
 	{
 		for (int ctr = 0; _Buffer[ctr] != '\0'; ctr++)
 		{
@@ -749,7 +749,7 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::toUpper()
+	void String::toUpper()
 	{
 		for (int ctr = 0; _Buffer[ctr] != '\0'; ctr++)
 		{
@@ -760,7 +760,7 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::leftTrim()
+	void String::leftTrim()
 	{
 		char *ptr = _Buffer;
 
@@ -784,7 +784,7 @@ namespace CoreLibrary
 		_StringLen -= trimlen;
 	}
 
-	void GenericString::rightTrim()
+	void String::rightTrim()
 	{
 		for (int ctr = _StringLen - 1; ctr > -1; ctr--)
 		{
@@ -799,13 +799,13 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::trim()
+	void String::trim()
 	{
 		rightTrim();
 		leftTrim();
 	}
 
-	void GenericString::replace(const GenericString &oldpattern, const GenericString &newpattern)
+	void String::replace(const String &oldpattern, const String &newpattern)
 	{
 		int substrpos = 0;
 		int diff = newpattern._StringLen - oldpattern._StringLen;
@@ -845,7 +845,7 @@ namespace CoreLibrary
 		_StringLen = stringLen(_Buffer);
 	}
 
-	void GenericString::replace(const char oldchar, const char newchar)
+	void String::replace(const char oldchar, const char newchar)
 	{
 		for (int ctr = 0; _Buffer[ctr] != '\0'; ctr++)
 		{
@@ -856,28 +856,28 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::replace(const GenericString &oldpattern, const long npattern)
+	void String::replace(const String &oldpattern, const long npattern)
 	{
 		char buffer[32] = { 0 };
 		convertToString(&buffer[0], (long long)npattern);
 		replace(oldpattern, buffer);
 	}
 
-	void GenericString::replace(const GenericString &oldpattern, const double npattern)
+	void String::replace(const String &oldpattern, const double npattern)
 	{
 		char buffer[32] = { 0 };
 		convertToString(&buffer[0], (double)npattern);
 		replace(oldpattern, buffer);
 	}
 
-	void GenericString::replace(const GenericString &oldpattern, const int npattern)
+	void String::replace(const String &oldpattern, const int npattern)
 	{
 		char buffer[32] = { 0 };
 		convertToString(&buffer[0], (long long)npattern);
 		replace(oldpattern, buffer);
 	}
 
-	void GenericString::remove(const GenericString &oldpattern)
+	void String::remove(const String &oldpattern)
 	{
 		int idxToDel = -1;
 
@@ -896,7 +896,7 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::remove(const char oldchar)
+	void String::remove(const char oldchar)
 	{
 		int idxToDel = -1;
 
@@ -915,7 +915,7 @@ namespace CoreLibrary
 		}
 	}
 
-	bool GenericString::removeFirst(const char oldchar)
+	bool String::removeFirst(const char oldchar)
 	{
 		int ctr = 0;
 
@@ -941,19 +941,19 @@ namespace CoreLibrary
 		return found;
 	}
 
-	void GenericString::removeAll(const char oldchar)
+	void String::removeAll(const char oldchar)
 	{
 		while (removeFirst(oldchar)) {}
 	}
 
-	void GenericString::removeAt(int pos, int len)
+	void String::removeAt(int pos, int len)
 	{
 		stringMove(&_Buffer[pos], &_Buffer[pos + len], _StringLen - len);
 		_Buffer[_StringLen - len] = 0;
 		_StringLen = _StringLen - len;
 	}
 
-	void GenericString::getKeyValuePair(GenericString &key, GenericString &value, const char delimiter)
+	void String::getKeyValuePair(String &key, String &value, const char delimiter)
 	{
 		int pos = indexOf(delimiter);
 
@@ -967,7 +967,7 @@ namespace CoreLibrary
 			value.assign(_Buffer, pos + 1, _StringLen - 1);
 	}
 
-	void GenericString::getKeyValuePair(GenericString &key, GenericString &value, const GenericString &delimiter)
+	void String::getKeyValuePair(String &key, String &value, const String &delimiter)
 	{
 		int pos = indexOf(delimiter);
 
@@ -978,7 +978,7 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::getSubStringList(List<GenericString> &tokens, const char delimiter)
+	void String::getSubStringList(List<String> &tokens, const char delimiter)
 	{
 		int delimpos = -1;
 		int offset = 1;
@@ -992,7 +992,7 @@ namespace CoreLibrary
 			{
 				if (_StringLen > startpos)
 				{
-					tokens.append(GenericString(_Buffer, startpos, _StringLen));
+					tokens.append(String(_Buffer, startpos, _StringLen));
 				}
 
 				break;
@@ -1000,14 +1000,14 @@ namespace CoreLibrary
 
 			if ((delimpos != 0) && (delimpos >= startpos) && (delimpos != (_StringLen - 1)))
 			{
-				tokens.append(GenericString(_Buffer, startpos, delimpos));
+				tokens.append(String(_Buffer, startpos, delimpos));
 			}
 
 			startpos = delimpos + offset;
 		}
 	}
 
-	void GenericString::getSubStringList(List<GenericString> &tokens, const GenericString &delimiter)
+	void String::getSubStringList(List<String> &tokens, const String &delimiter)
 	{
 		int delimpos = -1;
 		int offset = delimiter._StringLen;
@@ -1021,7 +1021,7 @@ namespace CoreLibrary
 			{
 				if (_StringLen > startpos)
 				{
-					tokens.append(GenericString(_Buffer, startpos, _StringLen));
+					tokens.append(String(_Buffer, startpos, _StringLen));
 				}
 
 				break;
@@ -1029,14 +1029,14 @@ namespace CoreLibrary
 
 			if ((delimpos != 0) && (delimpos >= startpos) && (delimpos != (_StringLen - 1)))
 			{
-				tokens.append(GenericString(_Buffer, startpos, delimpos));
+				tokens.append(String(_Buffer, startpos, delimpos));
 			}
 
 			startpos = delimpos + offset;
 		}
 	}
 
-	void GenericString::join(List<GenericString> &tokens, GenericString &newString, const char delimiter)
+	void String::join(List<String> &tokens, String &newString, const char delimiter)
 	{
 		int count = tokens.count();
 
@@ -1051,7 +1051,7 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::join(List<GenericString> &tokens, GenericString &newString, const GenericString &delimiter)
+	void String::join(List<String> &tokens, String &newString, const String &delimiter)
 	{
 		int count = tokens.count();
 
@@ -1066,12 +1066,12 @@ namespace CoreLibrary
 		}
 	}
 
-	void GenericString::reverse()
+	void String::reverse()
 	{
 		reverse(0, _StringLen);
 	}
 
-	void GenericString::reverse(int start, int len)
+	void String::reverse(int start, int len)
 	{
 		int term = len - 1;
 

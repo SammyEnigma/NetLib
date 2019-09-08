@@ -1,10 +1,11 @@
 #ifndef _ABNF_MESSAGE
 #define _ABNF_MESSAGE
 
-#include "GenericString.hpp"
-#include "Map.hpp"
+#include <string>
+#include <map>
+#include <unordered_map>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	typedef enum PacketType
 	{
@@ -29,7 +30,7 @@ namespace CoreLibrary
 		// Response
 		void setProtocolInformation(const char* protocol, const char* version, long responsecode, const char* responsetext);
 		void addHeader(const char* field, const char* value);
-		void serialize(GenericString &abnfString);
+		void serialize(std::string &abnfString);
 
 		// Common for transmission/reception
 		void	attachBody(const char* buffer);
@@ -46,26 +47,26 @@ namespace CoreLibrary
 		const char*	getContent();
 		long	getResponseCode();
 		long	getMessageType();
-		void	getFieldValue(const char* fieldName, GenericString &value);
+		void	getFieldValue(const char* fieldName, std::string &value);
 		int getContentSize();
 
 	private:
 		void decodeMessageIdentificationLine(const char* messageLine);
 		void encodeMessageIdentificationLine();
-		void processLine(const char* line, GenericString &field, GenericString &value);
-		void getLine(GenericString &line);
+		void processLine(const char* line, std::string &field, std::string &value);
+		void getLine(std::string &line);
 
-		Map<GenericString, GenericString> _KeyValueList;
+		std::unordered_map<std::string, std::string> _KeyValueList;
 
-		GenericString	_RequestBuffer;
+		std::string	_RequestBuffer;
 		char*			_Content;
 		bool			_HasContent;
-		GenericString	_Request;
-		GenericString	_URL;
-		GenericString	_Protocol;
-		GenericString	_Version;
-		GenericString	_ResponseText;
-		GenericString	_MessageLine;
+		std::string	_Request;
+		std::string	_URL;
+		std::string	_Protocol;
+		std::string	_Version;
+		std::string	_ResponseText;
+		std::string	_MessageLine;
 		long			_ResponseCode;
 		PacketType		_MessageType;
 		int				_ContentSize;

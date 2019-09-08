@@ -1,30 +1,17 @@
-#ifndef _TIME_STAMP
-#define _TIME_STAMP
+#ifndef _DATE_TIME
+#define _DATE_TIME
 
-#include "GenericString.hpp"
+#include <string>
+#include <time.h>
 
-namespace CoreLibrary
+namespace CoreLib
 {
-	typedef enum DateTimeAttribute
-	{
-		Days = 0,
-		Months = 1,
-		Years = 2,
-		Hours = 3,
-		Minutes = 4,
-		Seconds = 5,
-		Milliseconds
-
-	}DateTimeAttribute;
-
-	class DateTimeReference;
-
 	class DateTime
 	{
 	public:
 		DateTime();
 		DateTime(const DateTime& other);
-		DateTime(const GenericString &str, const GenericString &format);
+		DateTime(const std::string &str, const std::string &format);
 		DateTime(long long tinfo);
 		~DateTime();
 
@@ -40,12 +27,12 @@ namespace CoreLibrary
 		DateTime& operator-=(const DateTime& other);
 		DateTime operator-(const DateTime& other);
 
-		void buildFromString(const GenericString &str, const GenericString &format);
-		void buildFromTime(long long tinfo);
+		void buildFromString(const std::string &str, const std::string &format);
+		void buildFromTime(const time_t &tinfo);
 
-		GenericString getDateString(const char *format);
-		GenericString getDateString();
-		long long getTime() const;
+		std::string getDateString(const std::string& format);
+		std::string getDateString();
+		time_t getTime();
 
 		void addDays(int val);
 		void addHours(int val);
@@ -67,7 +54,7 @@ namespace CoreLibrary
 		void setSecond(int val);
 
 	private:
-		DateTimeReference* _TimeReference;
+		struct tm timeinfo;;
 	};
 }
 #endif

@@ -1,7 +1,7 @@
 #include "Variant.hpp"
 #include <memory.h>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	Variant::Variant()
 	{
@@ -38,7 +38,7 @@ namespace CoreLibrary
 		_DataSize = sizeof(unsigned char);
 	}
 
-	Variant::Variant(const GenericString &val)
+	Variant::Variant(const std::string &val)
 	{
 		int sz = val.length();
 
@@ -49,7 +49,7 @@ namespace CoreLibrary
 
 		_DataType = String;
 		memset((void*)&_RawBuffer[0], 0, 256);
-		memcpy((char*)&_RawBuffer[0], val.buffer(), sz);
+		memcpy((char*)&_RawBuffer[0], val.c_str(), sz);
 		_DataSize = sz;
 	}
 
@@ -101,9 +101,10 @@ namespace CoreLibrary
 
 	Variant::Variant(const DateTime &val)
 	{
-		long long t = val.getTime();
+		DateTime temp = val;
+		time_t t = temp.getTime();
 		_DataType = DateTimeStamp;
-		_DataSize = sizeof(long long);
+		_DataSize = sizeof(time_t);
 		memset((void*)&_RawBuffer[0], 0, 256);
 		memcpy(_RawBuffer, &t, _DataSize);
 	}
@@ -144,7 +145,7 @@ namespace CoreLibrary
 		_DataSize = sizeof(unsigned char);
 	}
 
-	void Variant::setData(const GenericString &val)
+	void Variant::setData(const std::string &val)
 	{
 		int sz = val.length();
 
@@ -155,7 +156,7 @@ namespace CoreLibrary
 
 		_DataType = String;
 		memset((void*)&_RawBuffer[0], 0, 256);
-		memcpy((char*)&_RawBuffer[0], val.buffer(), sz);
+		memcpy((char*)&_RawBuffer[0], val.c_str(), sz);
 		_DataSize = sz;
 	}
 
@@ -207,14 +208,15 @@ namespace CoreLibrary
 
 	void Variant::setData(const DateTime &val)
 	{
-		long long t = val.getTime();
+		DateTime temp = val;
+		time_t t = temp.getTime();
 		_DataType = DateTimeStamp;
-		_DataSize = sizeof(long long);
+		_DataSize = sizeof(time_t);
 		memset((void*)&_RawBuffer[0], 0, 256);
 		memcpy(_RawBuffer, &t, _DataSize);
 	}
 
-	void Variant::getString(GenericString &str)
+	void Variant::getString(std::string &str)
 	{
 		str.clear();
 

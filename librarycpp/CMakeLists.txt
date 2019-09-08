@@ -30,7 +30,7 @@ ${PROJECT_SOURCE_DIR}/DataConnection.cpp
 ${PROJECT_SOURCE_DIR}/DateTime.cpp
 ${PROJECT_SOURCE_DIR}/Directory.cpp
 ${PROJECT_SOURCE_DIR}/File.cpp
-${PROJECT_SOURCE_DIR}/GenericString.cpp
+${PROJECT_SOURCE_DIR}/String.cpp
 ${PROJECT_SOURCE_DIR}/Logger.cpp
 ${PROJECT_SOURCE_DIR}/Mail.cpp
 ${PROJECT_SOURCE_DIR}/Mutex.cpp
@@ -40,6 +40,7 @@ ${PROJECT_SOURCE_DIR}/SignalHandler.cpp
 ${PROJECT_SOURCE_DIR}/TcpClient.cpp
 ${PROJECT_SOURCE_DIR}/TcpServer.cpp
 ${PROJECT_SOURCE_DIR}/Variant.cpp
+${PROJECT_SOURCE_DIR}/StringEx.cpp
 ${PROJECT_SOURCE_DIR}/CoreLib.cpp
 )
 
@@ -57,7 +58,7 @@ ${PROJECT_HEADER_DIR}/DateTime.hpp
 ${PROJECT_HEADER_DIR}/Directory.hpp
 ${PROJECT_HEADER_DIR}/File.hpp
 ${PROJECT_HEADER_DIR}/EncryptionTypes.hpp
-${PROJECT_HEADER_DIR}/GenericString.hpp
+${PROJECT_HEADER_DIR}/String.hpp
 ${PROJECT_HEADER_DIR}/KeyValue.hpp
 ${PROJECT_HEADER_DIR}/List.hpp
 ${PROJECT_HEADER_DIR}/Logger.hpp
@@ -76,6 +77,7 @@ ${PROJECT_HEADER_DIR}/TcpClient.hpp
 ${PROJECT_HEADER_DIR}/TcpServer.hpp
 ${PROJECT_HEADER_DIR}/TreeNode.hpp
 ${PROJECT_HEADER_DIR}/Variant.hpp
+${PROJECT_HEADER_DIR}/StringEx.hpp
 ${PROJECT_HEADER_DIR}/CoreLib.hpp
 )
 

@@ -2,7 +2,7 @@
 #include <memory.h>
 #include <stdint.h>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 
 	const char encodingtable[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',

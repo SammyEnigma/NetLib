@@ -2,10 +2,10 @@
 #define _VARIANT
 
 #include "Buffer.hpp"
-#include "GenericString.hpp"
 #include "DateTime.hpp"
+#include <string>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	typedef enum VariantType
 	{
@@ -29,7 +29,7 @@ namespace CoreLibrary
 		Variant(const Variant& other);
 		Variant(const char val);
 		Variant(const unsigned char val);
-		Variant(const GenericString &val);
+		Variant(const std::string &val);
 		Variant(const Buffer &val);
 		Variant(const bool val);
 		Variant(const long val);
@@ -38,7 +38,7 @@ namespace CoreLibrary
 		Variant(const DateTime &val);
 
 		const void* getData();
-		void getString(GenericString &str);
+		void getString(std::string &str);
 		long getSignedNumber();
 		unsigned long getUnsignedNumber();
 		double getReal();
@@ -52,7 +52,7 @@ namespace CoreLibrary
 
 		void setData(const char val);
 		void setData(const unsigned char val);
-		void setData(const GenericString &val);
+		void setData(const std::string &val);
 		void setData(const Buffer &val);
 		void setData(const bool val);
 		void setData(const long val);

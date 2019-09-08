@@ -3,7 +3,7 @@
 
 #include "Node.hpp"
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	template <typename T>
 	class List

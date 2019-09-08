@@ -1,7 +1,7 @@
 #ifndef _BASE_64
 #define _BASE_64
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	class Base64
 	{

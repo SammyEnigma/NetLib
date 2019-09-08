@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	const long PAGE_SIZE = 1024 * sizeof(void*);
 
@@ -491,7 +491,7 @@ namespace CoreLibrary
 		}
 	}
 
-	void Buffer::getSubSegmentList(List<Buffer> &tokens, const char delimiter)
+	void Buffer::getSubSegmentList(std::list<Buffer> &tokens, const char delimiter)
 	{
 		int delimpos = -1;
 		int offset = 1;
@@ -505,7 +505,7 @@ namespace CoreLibrary
 			{
 				if (_DataLen > startpos)
 				{
-					tokens.append(Buffer(_Buffer, startpos, _DataLen));
+					tokens.push_back(Buffer(_Buffer, startpos, _DataLen));
 				}
 
 				break;
@@ -513,14 +513,14 @@ namespace CoreLibrary
 
 			if ((delimpos != 0) && (delimpos >= startpos) && (delimpos != (_DataLen - 1)))
 			{
-				tokens.append(Buffer(_Buffer, startpos, delimpos));
+				tokens.push_back(Buffer(_Buffer, startpos, delimpos));
 			}
 
 			startpos = delimpos + offset;
 		}
 	}
 
-	void Buffer::getSubSegmentList(List<Buffer> &tokens, const Buffer &delimiter)
+	void Buffer::getSubSegmentList(std::list<Buffer> &tokens, const Buffer &delimiter)
 	{
 		int delimpos = -1;
 		int offset = delimiter._DataLen;
@@ -534,7 +534,7 @@ namespace CoreLibrary
 			{
 				if (_DataLen > startpos)
 				{
-					tokens.append(Buffer(_Buffer, startpos, _DataLen));
+					tokens.push_back(Buffer(_Buffer, startpos, _DataLen));
 				}
 
 				break;
@@ -542,7 +542,7 @@ namespace CoreLibrary
 
 			if ((delimpos != 0) && (delimpos >= startpos) && (delimpos != (_DataLen - 1)))
 			{
-				tokens.append(Buffer(_Buffer, startpos, delimpos));
+				tokens.push_back(Buffer(_Buffer, startpos, delimpos));
 			}
 
 			startpos = delimpos + offset;
