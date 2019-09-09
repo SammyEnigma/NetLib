@@ -1,253 +1,221 @@
+#if defined(_WIN32) || defined(WIN32)
+#include <process.h>
+#define getpid()	_getpid()
+#define pid_t    long
+#else
+#include <unistd.h> 
+#endif
+
 #include "Logger.hpp"
+#include "StringEx.hpp"
+
+#include <filesystem>
+#include <chrono>
+
 #include <stdarg.h>
-#include <stdio.h>
+#include <memory.h>
+#include <string.h>
 
-namespace CoreLibrary
+Logger objLogger;
+
+Logger*  Logger::GetInstance()
 {
-	#if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
-	#include <memory.h>
-	#include <process.h>
-	#include <direct.h>
-	#define createdir(str) _mkdir(str)
-	#define getcwd(ptr,n) _getcwd(ptr,n)
-	#define chdir(str) _chdir(str)
-	#define getpid() _getpid()
-	#else
-	#include <unistd.h>
-	#include <string.h>
-	#endif
+    return &objLogger;
+}
 
-	Logger objLogger;
+Logger::Logger()
+{
+    logDirectory = "";
+    logFileSize = 1024;
 
-	Logger*  Logger::GetInstance()
+    char pidstr[16];
+    memset((char*)&pidstr[0],0,16);
+    sprintf(pidstr,"%d",getpid());
+    moduleName = pidstr;
+
+    logLevelMap.clear();
+
+    logLevelMap[LOG_INFO]       ="Information";
+    logLevelMap[LOG_WARNING]    ="Warning    ";
+    logLevelMap[LOG_ERROR]      ="Error      ";
+    logLevelMap[LOG_CRITICAL]   ="Critical   ";
+    logLevelMap[LOG_PANIC]      ="Panic      ";
+}
+
+Logger::~Logger()
+{
+    StopLogging();
+    logLevelMap.clear();
+}
+
+void Logger::StopLogging()
+{
+	if (logFile.is_open())
 	{
-		return &objLogger;
-	}
-
-	Logger::Logger()
-	{
-		_RemoteLogPort = 9090;
-		_RemoteLogHost = "127.0.0.1";
-		_LogDirectory = "";
-		_LogFileSize = 1024;
-
-		char pidstr[16];
-		memset((char*)&pidstr[0], 0, 16);
-		sprintf(pidstr, "%d", getpid());
-		_ModuleName = pidstr;
-
-		_LogLevelMap.clear();
-
-		LogLevel l1 = LogInfo;
-		LogLevel l2 = LogWarning;
-		LogLevel l3 = LogError;
-		LogLevel l4 = LogCritical;
-
-		_LogLevelMap.insert(l1, "Information");
-		_LogLevelMap.insert(l2, "Warning    ");
-		_LogLevelMap.insert(l3, "Error      ");
-		_LogLevelMap.insert(l4, "Critical   ");
-	}
-
-	Logger::~Logger()
-	{
-		stopLogging();
-	}
-
-	void Logger::stopLogging()
-	{
-		if (_LogFile.isOpen())
-		{
-			_LogFile.closeFile();
-		}
-		_LogLevelMap.clear();
-	}
-
-	void Logger::createBackupFileName(GenericString &str)
-	{
-		DateTime ts;
-		GenericString tstamp = ts.getDateString("yyyy.MM.dd-hh.mm.ss");
-		char temp[1024];
-		memset((char*)&temp[0], 0, 16);
-		sprintf(temp, "%s_%s.log", _ModuleName.buffer(), tstamp.buffer());
-		str = temp;
-	}
-
-	void Logger::startLogging(LogFileMode fmode)
-	{
-		_FileMode = fmode;
-
-		if (_LogDirectory.length() < 1)
-		{
-			char filepathbuffer[1024];
-			memset((char*)&filepathbuffer[0], 0, 1024);
-			getcwd(&filepathbuffer[0], 1024);
-
-			Directory dir(filepathbuffer);
-			GenericString pdir = dir.getParentDirectory();
-
-			pdir += "config/";
-
-			if (!Directory::directoryExists(pdir.buffer()))
-			{
-				Directory::createDirectory(pdir.buffer());
-			}
-
-			_LogDirectory = filepathbuffer;
-		}
-
-		_LogFilename = _LogDirectory + _ModuleName + ".log";
-
-		_LogFile.setPath(_LogFilename);
-
-		if (_FileMode == FileAppend)
-		{
-			_LogFile.openFile(FileOpenMode::Append, MimeType::Text);
-		}
-		else
-		{
-			_LogFile.openFile(FileOpenMode::Create, MimeType::Text);
-		}
-	}
-
-	void Logger::write(GenericString logEntry, LogLevel llevel, const char* func, const char* file, int line)
-	{
-		if (_LogFile.isOpen())
-		{
-			int sz = _LogFile.getSize();
-
-			if (sz >= _LogFileSize * 1024)
-			{
-				GenericString temp;
-				createBackupFileName(temp);
-				GenericString backupfile = _LogBackupDirectory + temp;
-				stopLogging();
-				rename(_LogFilename.buffer(), backupfile.buffer());
-				startLogging(_FileMode);
-			}
-
-			File fl(file);
-			GenericString sourcefile = fl.getName();
-			GenericString* lvel = _LogLevelMap[llevel];
-
-			DateTime ts;
-			GenericString tstamp = ts.getDateString("yyyy.MM.dd-hh.mm.ss");
-			char temp[1024];
-			memset((char*)&temp[0], 0, 16);
-
-			GenericString fname = func;
-
-			#if !defined(_WIN32) && !defined(WIN32)
-			int pos = fname.indexOf('(');
-			fname.SetAt(pos, '\0');
-			#endif
-
-			GenericString left, right;
-			fname.getKeyValuePair(left, right, "::");
-
-			if (right.length() > 1)
-			{
-				fname = right;
-			}
-
-			fname.getKeyValuePair(left, right, " ");
-
-			if (right.length() > 1)
-			{
-				fname = right;
-			}
-
-			sprintf(temp, "%s|%s|%05d|%s|%s| ", tstamp.buffer(), lvel->buffer(), line, fname.buffer(), sourcefile.buffer());
-
-			GenericString tbuff(temp);
-			_LogFile.write(tbuff);
-			_LogFile.write(logEntry);
-		}
-	}
-
-	void Logger::setModuleName(GenericString mname)
-	{
-		int len = mname.length();
-
-		int ctr = 0;
-
-		int pos1 = 0;
-		int pos2 = 0;
-
-		_ModuleName = mname;
-
-		pos1 = _ModuleName.indexOf('/');
-		pos2 = _ModuleName.indexOf('\\');
-
-		if (pos1 > -1 || pos2 > -1)
-		{
-			for (ctr = len; ; ctr--)
-			{
-				if (mname[ctr] == '/' || mname[ctr] == '\\')
-				{
-					break;
-				}
-			}
-			_ModuleName.assign(mname.buffer(), mname.length() - ctr, ctr + 1);
-		}
-		else
-		{
-			_ModuleName = mname;
-		}
-
-		_ModuleName.replace(".exe", "");
-		_ModuleName.replace(".EXE", "");
-	}
-
-	void Logger::setRemotePort(int remotePort)
-	{
-		_RemoteLogPort = remotePort;
-	}
-
-	void Logger::setRemoteHost(GenericString remoteHost)
-	{
-		_RemoteLogHost = remoteHost;
-	}
-
-	void Logger::setLogFileSize(int flsz)
-	{
-		_LogFileSize = flsz;
-	}
-
-	void Logger::setLogDirectory(GenericString dirpath)
-	{
-		_LogDirectory = dirpath;
-
-		int len = _LogDirectory.length();
-
-		char buffer[2048] = { 0 };
-
-		memcpy(buffer, _LogDirectory.buffer(), len);
-
-		if (buffer[len - 1] == '/' || buffer[len - 1] == '\\')
-		{
-			buffer[len - 1] = 0;
-		}
-
-		memcpy(buffer + len, ".bak/", 5);
-
-		_LogBackupDirectory = buffer;
-
-		if (!Directory::directoryExists(buffer))
-		{
-			Directory::createDirectory(buffer);
-		}
-	}
-
-	void Logger::writeExtended(LogLevel llevel, const char *func, const char *file, int line, const char* format, ...)
-	{
-		char tempbuf[1024];
-		memset((char*)&tempbuf[0], 0, 1024);
-		va_list args;
-		va_start(args, format);
-		vsprintf(tempbuf, format, args);
-		tempbuf[1023] = 0;
-		write(tempbuf, llevel, func, file, line);
+		logFile.flush();
+		logFile.close();
 	}
 }
+
+void Logger::CreateBackupFileName(std::string &str)
+{
+	DateTime ts;
+	std::string tstamp = ts.getDateString("yyyy.MM.dd-hh.mm.ss");
+    char temp[1024];
+    memset((char*)&temp[0],0,16);
+    sprintf(temp,"%s_%s.log",moduleName.c_str(),tstamp.c_str());
+    str = temp;
+}
+
+void Logger::StartLogging()
+{
+    if(logDirectory.empty() || logDirectory.length()<1)
+    {
+		std::string parent_dir, current_dir;
+		dircurrentdirectory(current_dir);
+		dirgetparentdirectory(current_dir, parent_dir);
+
+		logDirectory = parent_dir + "/log/";
+
+        if(!dirisdirectory(logDirectory))
+        {
+            dircreatedirectory(logDirectory);
+        }
+    }
+
+    logFilename = logDirectory + moduleName + ".log";
+
+    logFile = fopen(logFilename.c_str(),"w+");
+}
+
+void Logger::Write(std::string logEntry, LogLevel llevel, const char* func, const char* file, int line)
+{
+    if(logFile.is_open() && logFile.good())
+    {
+        size_t sz = std::filesystem::file_size(logFilename);
+
+        if(sz >= logFileSize*1024)
+        {
+			std::string temp;
+            CreateBackupFileName(temp);
+			std::string backupfile = logBackupDirectory + temp;
+            StopLogging();
+            int res = rename(logFilename.c_str(),backupfile.c_str());
+            StartLogging();
+        }
+
+		std::string sourcefile;
+		dirgetname(file, sourcefile);
+		std::string lvel = logLevelMap[llevel];
+
+		DateTime ts;
+		std::string tstamp = ts.getDateString("yyyy.MM.dd-hh.mm.ss");
+        char temp[1024];
+        memset((char*)&temp[0],0,16);
+
+        char fname[256]={0};
+        memcpy(fname,func,255);
+        #if defined(_WIN32) || defined(WIN32)
+        #else
+        int pos = strcharacterpos(fname,'(');
+        fname[pos]=0;
+        #endif
+
+		std::string left, right;
+
+        strsplit(fname, "::", left, right);
+        if(right.length()>1)
+        {
+            strcpy(fname,right.c_str());
+        }
+
+        strsplit(fname, " ", left, right);
+        if(right.length()>1)
+        {
+            strcpy(fname,right.c_str());
+        }
+
+        sprintf(temp,"%s|%s|%05d|%s|%s| ",tstamp.c_str(),lvel.c_str(),line,fname,sourcefile.c_str());
+
+        logEntry = temp + logEntry;
+        fprintf(logFile,"%s\n",logEntry.c_str());
+        fflush(logFile);
+    }
+}
+
+void Logger::SetModuleName(const char *mname)
+{
+    int len = (int) strlen(mname);
+
+    int ctr = 0;
+
+    int pos1 = 0;
+    int pos2 = 0;
+
+    pos1 = strcharacterpos(mname, '/');
+    pos2 = strcharacterpos(mname, '\\');
+
+    if(pos1 > -1 || pos2 > -1)
+    {
+        for(ctr = len; ; ctr--)
+        {
+            if(mname[ctr] == '/' || mname[ctr] == '\\')
+            {
+                break;
+            }
+        }
+        char buffer[33]={0};
+
+        strncpy((char*)&buffer[0], (char*)&mname[ctr+1], 32);
+
+        moduleName = buffer;
+    }
+    else
+    {
+        moduleName = mname;
+    }
+
+    strreplace(moduleName, ".exe", "");
+    strreplace(moduleName, ".EXE", "");
+}
+
+void Logger::SetLogFileSize(int flsz)
+{
+    logFileSize = flsz;
+}
+
+void Logger::SetLogDirectory(std::string &dirpath)
+{
+    logDirectory = dirpath;
+
+    char buffer[2048]={0};
+
+    strcpy(buffer, logDirectory.c_str());
+
+    if(buffer[strlen(buffer)-1]== '/' || buffer[strlen(buffer)-1]== '\\')
+    {
+        buffer[strlen(buffer)-1] = 0;
+    }
+
+    strcat(buffer, ".bak/");
+
+    logBackupDirectory = buffer;
+
+    if(!dirisdirectory(buffer))
+    {
+        dircreatedirectory(buffer);
+    }
+}
+
+void Logger::WriteExtended(LogLevel llevel, const char *func, const char *file, int line, const char* format,...)
+{
+    char tempbuf[1024];
+    memset((char*)&tempbuf[0],0,1024);
+    va_list args;
+    va_start(args, format);
+    vsprintf(tempbuf, format, args);
+    tempbuf[1023]=0;
+    Write(tempbuf,llevel,func,file,line);
+}
+
 

@@ -459,3 +459,8 @@ int strextractint(const std::string& str, size_t pos, size_t len)
 
 	return val;
 }
+
+int strextractint(const std::string& str)
+{
+	return strextractint(str, 0, str.length());
+}

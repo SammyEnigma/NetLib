@@ -12,8 +12,8 @@ namespace CoreLib
 {
 	ABNFMessage::ABNFMessage()
 	{
-		_RequestBuffer.clear();
-		_Content = nullptr;
+		_Header.clear();
+		_Body.clear();
 		_HasContent = false;
 		_Request.clear();
 		_URL.clear();
@@ -22,25 +22,7 @@ namespace CoreLib
 		_ResponseText.clear();
 		_ResponseCode = -1;
 		_MessageType = Request;
-		_KeyValueList.clear();
-		_ContentSize = 0;
-	}
-
-	ABNFMessage::ABNFMessage(const char* buffer)
-	{
-		_RequestBuffer.clear();
-		_Content = nullptr;
-		_HasContent = false;
-		_Request.clear();
-		_URL.clear();
-		_Protocol.clear();
-		_Version.clear();
-		_ResponseText.clear();
-		_ResponseCode = -1;
-		_MessageType = Request;
-		_RequestBuffer = buffer;
-		_KeyValueList.clear();
-		_ContentSize = 0;
+		headers.clear();
 	}
 
 	void ABNFMessage::reset()
@@ -49,67 +31,42 @@ namespace CoreLib
 
 	ABNFMessage::~ABNFMessage()
 	{
-
-		if (_Content != nullptr)
-		{
-			delete _Content;
-			_Content = nullptr;
-		}
-
-		_RequestBuffer.clear();
-		_HasContent = false;
-		_Request.clear();
-		_URL.clear();
-		_Protocol.clear();
-		_Version.clear();
-		_ResponseText.clear();
-		_ResponseCode = -1;
-		_MessageType = Request;
-		_KeyValueList.clear();
-		_ContentSize = 0;
 	}
 
-	void ABNFMessage::setHeader(const char* buffer)
+	void ABNFMessage::setHeader(const std::string& buffer)
 	{
 		reset();
-		_RequestBuffer = buffer;
+		_Header = buffer;
 	}
 
-	void ABNFMessage::attachBody(const char* buffer)
+	void ABNFMessage::setBody(const std::string& buffer)
 	{
-		if (_Content != nullptr)
-		{
-			delete _Content;
-			_Content = nullptr;
-		}
-
-		_Content = new char[_ContentSize];
-		memcpy(_Content, buffer, _ContentSize);
+		_Body = buffer;
 	}
 
-	const char*	ABNFMessage::getRequest()
+	const std::string&	ABNFMessage::getRequest()
 	{
-		return _Request.c_str();
+		return _Request;
 	}
 
-	const char*	ABNFMessage::getProtocol()
+	const std::string&	ABNFMessage::getProtocol()
 	{
-		return _Protocol.c_str();
+		return _Protocol;
 	}
 
-	const char*	ABNFMessage::getURL()
+	const std::string&	ABNFMessage::getURL()
 	{
-		return _URL.c_str();
+		return _URL;
 	}
 
-	const char*	ABNFMessage::getVersion()
+	const std::string&	ABNFMessage::getVersion()
 	{
-		return _Version.c_str();
+		return _Version;
 	}
 
-	const char*	ABNFMessage::getResponseText()
+	const std::string&	ABNFMessage::getResponseText()
 	{
-		return _ResponseText.c_str();
+		return _ResponseText;
 	}
 
 	long ABNFMessage::getResponseCode()
@@ -122,66 +79,55 @@ namespace CoreLib
 		return _MessageType;
 	}
 
-	const char*	ABNFMessage::getContent()
+	const std::string&	ABNFMessage::getContent()
 	{
-		return _Content;
+		return _Body;
 	}
 
-	int ABNFMessage::getContentSize()
+	size_t ABNFMessage::getContentSize()
 	{
-		return _ContentSize;
+		return _Body.length();
 	}
 
 
-	void ABNFMessage::getFieldValue(const char* fieldName, std::string &value)
+	const std::string& ABNFMessage::getHeader(const std::string& fieldName)
 	{
-		char *fieldval = (char*)_KeyValueList.value(fieldName)->c_str();
-		if (fieldval == nullptr)
-		{
-			value.clear();
-		}
-		else
-		{
-			value = fieldval;
-		}
-
-		return;
+		return headers[fieldName];
 	}
-
 
 	bool ABNFMessage::deSerialize()
 	{
 		std::string fieldValueParams;
 		std::string field, value;
 
-		getLine(_MessageLine);
-		decodeMessageIdentificationLine(_MessageLine.c_str());
+		std::vector<std::string> lines;
 
-		while (true)
+		strsplit(_Header, lines, "\r\n");
+
+		size_t line_count = 0;
+
+		for (auto line : lines)
 		{
-			getLine(fieldValueParams);
-			processLine(fieldValueParams.c_str(), field, value);
-			if (field.length() < 1)
+			if (line_count == 0)
 			{
-				break;
+				decodeMessageIdentificationLine(line);
+				continue;
 			}
 
-			addHeader(field.c_str(), value.c_str());
+			strsplit(line, ':', field, value);
+			stralltrim(field);
+			stralltrim(value);
 
-			if (memcmp(field.c_str(), "Content-Length", 14) == 0)
+			headers[field] = value;
+
+			if (field == "Content-Length")
 			{
-				if (value.getInt() > 0)
-				{
-					_HasContent = true;
-					_ContentSize = value.getInt();
-				}
-				else
-				{
-					_HasContent = false;
-				}
-				break;;
+				_HasContent = true;
 			}
+
+			line_count++;
 		}
+
 		return true;
 	}
 
@@ -190,58 +136,7 @@ namespace CoreLib
 		return _HasContent;
 	}
 
-	void ABNFMessage::getLine(std::string &line)
-	{
-		if (_RequestBuffer.length() < 1)
-		{
-			line.clear();
-			return;
-		}
-
-		std::string next;
-
-		int pos = _RequestBuffer.indexOf("\r\n");
-
-		if (pos == -1)
-		{
-			line = _RequestBuffer;
-			_RequestBuffer.clear();
-			return;
-		}
-
-		_RequestBuffer.getKeyValuePair(line, next, "\r\n");
-
-		_RequestBuffer = next;
-	}
-
-	void ABNFMessage::processLine(const char *line, std::string &field, std::string &value)
-	{
-		std::string temp(line);
-
-		int delimeterpos = temp.indexOf(':');
-
-		field = "";
-		value = "";
-		int ctr = 0;
-		for (ctr = 0; line[ctr] != 0; ctr++)
-		{
-			if (ctr < delimeterpos)
-			{
-				field += line[ctr];
-			}
-
-			if (ctr > delimeterpos + 1)
-			{
-				value += line[ctr];
-			}
-			if (ctr == delimeterpos)
-			{
-				continue;
-			}
-		}
-	}
-
-	void ABNFMessage::decodeMessageIdentificationLine(const char* requestLine)
+	void ABNFMessage::decodeMessageIdentificationLine(const std::string& requestLine)
 	{
 		_Request.clear();
 		_URL.clear();
@@ -280,18 +175,18 @@ namespace CoreLib
 			}
 		}
 
-		if (token1.indexOf('/') == -1)
+		if (token1.find('/') == std::string::npos)
 		{
 			_Request = token1;
 			_URL = token2;
-			token3.getKeyValuePair(_Protocol, _Version, '/');
+			strsplit(token3, '/', _Protocol, _Version);
 			_MessageType = Request;
 			return;
 		}
 		else
 		{
-			token1.getKeyValuePair(_Protocol, _Version, '/');
-			_ResponseCode = token2.getInt();
+			strsplit(token1, '/', _Protocol, _Version);
+			_ResponseCode = strextractint(token2);
 			_ResponseText = token3;
 			_MessageType = Response;
 			return;
@@ -313,29 +208,29 @@ namespace CoreLib
 		_MessageLine = tempBuffer;
 	}
 
-	void ABNFMessage::setProtocolInformation(const char* request, const char* URL, const char* protocol, const char* version)
+	void ABNFMessage::setProtocolInformation(const std::string& request, const std::string& URL, const std::string& protocol, const std::string& version)
 	{
 		_MessageType = Request;
-		_KeyValueList.clear();
+		headers.clear();
 		_Protocol = protocol;
 		_Version = version;
 		_Request = request;
 		_URL = URL;
 	}
 
-	void ABNFMessage::setProtocolInformation(const char* protocol, const char* version, long responsecode, const char* responsetext)
+	void ABNFMessage::setProtocolInformation(const std::string& protocol, const std::string& version, long responsecode, const std::string& responsetext)
 	{
 		_MessageType = Response;
-		_KeyValueList.clear();
+		headers.clear();
 		_Protocol = protocol;
 		_Version = version;
 		_ResponseCode = responsecode;
 		_ResponseText = responsetext;
 	}
 
-	void ABNFMessage::addHeader(const char* field, const char* value)
+	void ABNFMessage::addHeader(const std::string& field, const std::string& value)
 	{
-		_KeyValueList.insert(field, value);
+		headers[field] = value;
 	}
 
 	void ABNFMessage::serialize(std::string &abnfString)
@@ -344,13 +239,11 @@ namespace CoreLib
 
 		abnfString.clear();
 
-		int headercount = _KeyValueList.count();
-
-		for (int index = 0; index < headercount; index++)
+		for (auto kv : headers)
 		{
-			abnfString += _KeyValueList.getAt(index);
+			abnfString += kv.first;
 			abnfString += ": ";
-			abnfString += *_KeyValueList.getAt(index);
+			abnfString += kv.second;
 			abnfString += "\r\n";
 		}
 

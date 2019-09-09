@@ -1,27 +1,26 @@
 #ifndef _CONFIGURATION
 #define _CONFIGURATION
 
-#include "GenericString.hpp"
-#include "Directory.hpp"
-#include "Map.hpp"
+#include <string>
+#include <fstream>
+#include <map>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	class Configuration
 	{
 	public:
 		Configuration();
 		~Configuration();
-		void setFileName(GenericString fname);
+		void setFileName(std::string fname);
+		bool loadConfiguration(const std::string &configFile);
 		bool loadConfiguration();
-		bool loadCustomConfiguration(const GenericString &configFile);
-		GenericString getValue(const GenericString &section, const GenericString &settingKey, const GenericString defval = "");
-		bool isSection(const GenericString &section);
+		std::string getValue(const std::string &section, const std::string &settingKey, const std::string defval = "");
+		bool isSection(const std::string &section);
 	private:
-		bool loadConfiguration(const GenericString &configFile);
-		void addSection(GenericString &str, const Map<GenericString, GenericString> &list);
-		Map<GenericString, Map<GenericString, GenericString>> _ConfigurationMap;
-		GenericString _ConfigFileName;
+		void addSection(std::string &str, const std::map<std::string, std::string> &list);
+		std::map<std::string, std::map<std::string, std::string>> _Configuration;
+		std::string _ConfigFileName;
 	};
 }
 #endif

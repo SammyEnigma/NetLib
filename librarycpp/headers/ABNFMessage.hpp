@@ -2,7 +2,6 @@
 #define _ABNF_MESSAGE
 
 #include <string>
-#include <map>
 #include <unordered_map>
 
 namespace CoreLib
@@ -17,59 +16,55 @@ namespace CoreLib
 	{
 	public:
 		ABNFMessage();
-		ABNFMessage(const char* buffer);
 		virtual ~ABNFMessage();
 
 		// Incoming packet functions
-		void setHeader(const char* buffer);
+		void setHeader(const std::string& buffer);
 		bool deSerialize();
 
 		// Outgoing packet functions
 		// Request
-		void setProtocolInformation(const char* request, const char* URL, const char* protocol, const char* version);
+		void setProtocolInformation(const std::string& request, const std::string& URL, const std::string& protocol, const std::string& version);
 		// Response
-		void setProtocolInformation(const char* protocol, const char* version, long responsecode, const char* responsetext);
-		void addHeader(const char* field, const char* value);
+		void setProtocolInformation(const std::string& protocol, const std::string& version, long responsecode, const std::string& responsetext);
+		void addHeader(const std::string& field, const std::string& value);
 		void serialize(std::string &abnfString);
 
 		// Common for transmission/reception
-		void	attachBody(const char* buffer);
+		void	setBody(const std::string& buffer);
 
 		// Reset all internal data - useful when we reuse the packet
 		void reset();
 
 		bool	hasBody();
-		const char*	getRequest();
-		const char*	getProtocol();
-		const char*	getURL();
-		const char*	getVersion();
-		const char*	getResponseText();
-		const char*	getContent();
+		const std::string&	getRequest();
+		const std::string&	getProtocol();
+		const std::string&	getURL();
+		const std::string&	getVersion();
+		const std::string&	getResponseText();
+		const std::string&	getContent();
+		const std::string&  getHeader(const std::string& fieldName);
 		long	getResponseCode();
 		long	getMessageType();
-		void	getFieldValue(const char* fieldName, std::string &value);
-		int getContentSize();
+		size_t getContentSize();
 
 	private:
-		void decodeMessageIdentificationLine(const char* messageLine);
+		void decodeMessageIdentificationLine(const std::string& messageLine);
 		void encodeMessageIdentificationLine();
-		void processLine(const char* line, std::string &field, std::string &value);
-		void getLine(std::string &line);
 
-		std::unordered_map<std::string, std::string> _KeyValueList;
+		std::unordered_map<std::string, std::string> headers;
 
-		std::string	_RequestBuffer;
-		char*			_Content;
-		bool			_HasContent;
+		std::string	_Header;
+		std::string	_Body;
+		bool		_HasContent;
 		std::string	_Request;
 		std::string	_URL;
 		std::string	_Protocol;
 		std::string	_Version;
 		std::string	_ResponseText;
 		std::string	_MessageLine;
-		long			_ResponseCode;
-		PacketType		_MessageType;
-		int				_ContentSize;
+		long		_ResponseCode;
+		PacketType	_MessageType;
 	};
 
 	typedef ABNFMessage HttpRequest;

@@ -35,6 +35,7 @@ void strrealtostring(std::string &str, const double val);
 void strtimestamp(std::string &srcstr);
 
 int strextractint(const std::string &str, size_t pos, size_t len);
+int strextractint(const std::string& str);
 
 #endif
 

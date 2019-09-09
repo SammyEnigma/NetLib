@@ -1,75 +1,54 @@
 #ifndef _LOGGER
 #define _LOGGER
 
-#include "GenericString.hpp"
-#include "Directory.hpp"
-#include "File.hpp"
-#include "Map.hpp"
-#include "DateTime.hpp"
-#include "Buffer.hpp"
+#include <map>
+#include <string>
+#include <fstream>
 
-namespace CoreLibrary
+using namespace std;
+
+#if defined(_WIN32) || defined(WIN32)
+#define __FUNCTIONNAME__ __FUNCTION__
+#else
+#define __FUNCTIONNAME__ __PRETTY_FUNCTION__
+#endif
+
+typedef enum LogLevel
 {
-	#if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
-	#define FUNCTIONNAME __FUNCTION__
-	#endif
+    LOG_INFO=0,
+    LOG_ERROR=1,
+    LOG_WARNING=2,
+    LOG_CRITICAL=3,
+    LOG_PANIC=4
+}LogLevel;
 
-	#if defined(__gnu_linux__) || defined (__linux__)
-	#define FUNCTIONNAME __PRETTY_FUNCTION__
-	#endif
+class Logger
+{
+public:
+	Logger();
+	~Logger();
 
-	#if defined(__unix__)
-	#define FUNCTIONNAME "NoName"
-	#endif
+    void    StartLogging();
+    void    StopLogging();
+    void    Write(std::string logEntry, LogLevel llevel, const char* func, const char* file, int line);
+    void    WriteExtended(LogLevel llevel, const char* func, const char* file, int line, const char* format,...);
+    void    SetLogFileSize(int flsz);
+    void    SetLogDirectory(std::string &dirpath);
+    void    SetModuleName(const char* mname);
+    static Logger*  GetInstance();
+private:
+    void CreateBackupFileName(std::string &str);
+	std::string logFilename;
+	std::string  logDirectory;
+	std::string  logBackupDirectory;
+    int     logFileSize;
+	std::string  moduleName;
+    ofstream   logFile;
+    std::map<LogLevel, std::string> logLevelMap;
+};
 
-	typedef enum LogLevel
-	{
-		LogInfo = 0,
-		LogError = 1,
-		LogWarning = 2,
-		LogCritical = 3
-	}LogLevel;
+#define writeLog(str,level) Logger::GetInstance()->Write(str,level,__FUNCTIONNAME__,__FILE__,__LINE__);
+#define writeLogNormal(str) Logger::GetInstance()->Write(str,LOG_INFO,__FUNCTIONNAME__,__FILE__,__LINE__);
 
-	typedef enum LogFileMode
-	{
-		FileAppend = 0,
-		FileCreateNew = 1
-	}LogFileMode;
-
-	typedef Map<LogLevel, GenericString> LogLevelStrings;
-
-	class Logger
-	{
-	public:
-		Logger();
-		~Logger();
-
-		void   startLogging(LogFileMode fmode);
-		void   stopLogging();
-		void   write(GenericString logEntry, LogLevel llevel, const char* func, const char* file, int line);
-		void   writeExtended(LogLevel llevel, const char* func, const char* file, int line, const char* format, ...);
-		void   setRemotePort(int remotePort);
-		void   setRemoteHost(GenericString remoteHost);
-		void   setLogFileSize(int flsz);
-		void   setLogDirectory(GenericString dirpath);
-		void   setModuleName(GenericString mname);
-		static Logger*  GetInstance();
-	private:
-		void createBackupFileName(GenericString &str);
-		int				_RemoteLogPort;
-		GenericString	_LogFilename;
-		GenericString	_RemoteLogHost;
-		GenericString	_LogDirectory;
-		GenericString	_LogBackupDirectory;
-		int				_LogFileSize;
-		GenericString	_ModuleName;
-		File			_LogFile;
-		LogFileMode		_FileMode;
-		LogLevelStrings	_LogLevelMap;
-	};
-
-	#define writeLog(str,level) Logger::GetInstance()->write(str,level,FUNCTIONNAME,__FILE__,__LINE__);
-	#define writeLogNormal(str) Logger::GetInstance()->write(str,LogInfo,FUNCTIONNAME,__FILE__,__LINE__);
-}
 #endif
 

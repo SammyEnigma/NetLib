@@ -1,9 +1,9 @@
-#ifndef _MIME_TYPE
-#define _MIME_TYPE
+#ifndef _HTTP_MIME
+#define _HTTP_MIME
 
-namespace CoreLibrary
+namespace CoreLib
 {
-	typedef enum MimeType
+	typedef enum HttpMime
 	{
 		Binary = 0,
 		Text = 1,
@@ -11,6 +11,6 @@ namespace CoreLibrary
 		Audio = 3,
 		Video = 4,
 		RichText = 5,
-	}MimeType;
+	}HttpMime;
 }
 #endif
