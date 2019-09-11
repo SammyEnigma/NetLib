@@ -1,20 +1,17 @@
-#if defined(_WIN32) || defined(WIN32)
-#include <process.h>
-#define getpid()	_getpid()
-#define pid_t    long
-#else
-#include <unistd.h> 
-#endif
-
 #include "Logger.hpp"
 #include "StringEx.hpp"
 
+#if defined (_FILESYSTEM_)
 #include <filesystem>
-#include <chrono>
+namespace fs = std::filesystem;
+#else
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#endif
 
-#include <stdarg.h>
-#include <memory.h>
-#include <string.h>
+#include <chrono>
+#include <thread>
+#include <chrono>
 
 Logger objLogger;
 
@@ -28,12 +25,11 @@ Logger::Logger()
     logDirectory = "";
     logFileSize = 1024;
 
-    char pidstr[16];
-    memset((char*)&pidstr[0],0,16);
-    sprintf(pidstr,"%d",getpid());
-    moduleName = pidstr;
-
     logLevelMap.clear();
+
+	std::string ph = fs::current_path().generic_string();
+	logDirectory = ph + "/logs/";
+	fs::create_directory(logDirectory);
 
     logLevelMap[LOG_INFO]       ="Information";
     logLevelMap[LOG_WARNING]    ="Warning    ";
@@ -57,64 +53,61 @@ void Logger::StopLogging()
 	}
 }
 
-void Logger::CreateBackupFileName(std::string &str)
-{
-	DateTime ts;
-	std::string tstamp = ts.getDateString("yyyy.MM.dd-hh.mm.ss");
-    char temp[1024];
-    memset((char*)&temp[0],0,16);
-    sprintf(temp,"%s_%s.log",moduleName.c_str(),tstamp.c_str());
-    str = temp;
-}
-
 void Logger::StartLogging()
 {
+	if (moduleName.length() < 1)
+	{
+		return;
+	}
+
     if(logDirectory.empty() || logDirectory.length()<1)
     {
-		std::string parent_dir, current_dir;
-		dircurrentdirectory(current_dir);
-		dirgetparentdirectory(current_dir, parent_dir);
-
-		logDirectory = parent_dir + "/log/";
-
-        if(!dirisdirectory(logDirectory))
-        {
-            dircreatedirectory(logDirectory);
-        }
+		std::string ph = fs::current_path().generic_string();
+		logDirectory = ph + "/logs/";
+		fs::create_directory(logDirectory);
     }
 
     logFilename = logDirectory + moduleName + ".log";
 
-    logFile = fopen(logFilename.c_str(),"w+");
+	logFile.open(logFilename);
 }
 
 void Logger::Write(std::string logEntry, LogLevel llevel, const char* func, const char* file, int line)
 {
     if(logFile.is_open() && logFile.good())
     {
-        size_t sz = std::filesystem::file_size(logFilename);
+        size_t sz = fs::file_size(logFilename);
 
-        if(sz >= logFileSize*1024)
+        if(sz >= (logFileSize * 1024))
         {
-			std::string temp;
-            CreateBackupFileName(temp);
-			std::string backupfile = logBackupDirectory + temp;
+			std::string backupfile;
+
+			auto timenow = std::chrono::system_clock::now();
+			std::time_t t = std::chrono::system_clock::to_time_t(timenow);
+			std::string ts = std::ctime(&t);
+			ts.resize(ts.size() - 1);
+
+			backupfile += moduleName;
+			backupfile += "_";
+			backupfile += ts;
+			backupfile += ".log";
+
             StopLogging();
-            int res = rename(logFilename.c_str(),backupfile.c_str());
+            int res = rename(logFilename.c_str(), backupfile.c_str());
             StartLogging();
         }
 
-		std::string sourcefile;
-		dirgetname(file, sourcefile);
+		std::string sourcefile = fs::path(std::string(file)).filename().generic_string();
+
 		std::string lvel = logLevelMap[llevel];
 
-		DateTime ts;
-		std::string tstamp = ts.getDateString("yyyy.MM.dd-hh.mm.ss");
-        char temp[1024];
-        memset((char*)&temp[0],0,16);
+		auto timenow = std::chrono::system_clock::now();
+		std::time_t t = std::chrono::system_clock::to_time_t(timenow);
+		std::string ts = std::ctime(&t);
+		ts.resize(ts.size() - 1);
 
-        char fname[256]={0};
-        memcpy(fname,func,255);
+		std::string fname;
+        fname = func;
         #if defined(_WIN32) || defined(WIN32)
         #else
         int pos = strcharacterpos(fname,'(');
@@ -124,56 +117,46 @@ void Logger::Write(std::string logEntry, LogLevel llevel, const char* func, cons
 		std::string left, right;
 
         strsplit(fname, "::", left, right);
-        if(right.length()>1)
+
+        if(right.length() > 1)
         {
-            strcpy(fname,right.c_str());
+            fname = right;
         }
 
         strsplit(fname, " ", left, right);
-        if(right.length()>1)
+
+        if(right.length() > 1)
         {
-            strcpy(fname,right.c_str());
+            fname = right;
         }
 
-        sprintf(temp,"%s|%s|%05d|%s|%s| ",tstamp.c_str(),lvel.c_str(),line,fname,sourcefile.c_str());
+		char temp[1024] = { 0 };
+        sprintf(temp,"%s|%s|%05d|%s|%s| ", ts.c_str() , lvel.c_str(), line, fname.c_str(), sourcefile.c_str());
 
         logEntry = temp + logEntry;
-        fprintf(logFile,"%s\n",logEntry.c_str());
-        fflush(logFile);
+		logEntry += "\n";
+		logFile.write(logEntry.c_str(), logEntry.length());
+		logFile.flush();
     }
 }
 
-void Logger::SetModuleName(const char *mname)
+void Logger::SetModuleName(const std::string& mname)
 {
-    int len = (int) strlen(mname);
+    moduleName = mname;
+	
+	size_t pos = 0;
 
-    int ctr = 0;
+    pos = strcharacterpos(mname, '/');
 
-    int pos1 = 0;
-    int pos2 = 0;
+	if (pos < 0)
+	{
+		pos = strcharacterpos(mname, '\\');
+	}
 
-    pos1 = strcharacterpos(mname, '/');
-    pos2 = strcharacterpos(mname, '\\');
-
-    if(pos1 > -1 || pos2 > -1)
-    {
-        for(ctr = len; ; ctr--)
-        {
-            if(mname[ctr] == '/' || mname[ctr] == '\\')
-            {
-                break;
-            }
-        }
-        char buffer[33]={0};
-
-        strncpy((char*)&buffer[0], (char*)&mname[ctr+1], 32);
-
-        moduleName = buffer;
-    }
-    else
-    {
-        moduleName = mname;
-    }
+	if (pos > -1)
+	{
+		moduleName = moduleName.erase(0, pos);
+	}
 
     strreplace(moduleName, ".exe", "");
     strreplace(moduleName, ".EXE", "");
@@ -184,38 +167,11 @@ void Logger::SetLogFileSize(int flsz)
     logFileSize = flsz;
 }
 
-void Logger::SetLogDirectory(std::string &dirpath)
+void Logger::SetLogDirectory(const std::string &dirpath)
 {
     logDirectory = dirpath;
-
-    char buffer[2048]={0};
-
-    strcpy(buffer, logDirectory.c_str());
-
-    if(buffer[strlen(buffer)-1]== '/' || buffer[strlen(buffer)-1]== '\\')
-    {
-        buffer[strlen(buffer)-1] = 0;
-    }
-
-    strcat(buffer, ".bak/");
-
-    logBackupDirectory = buffer;
-
-    if(!dirisdirectory(buffer))
-    {
-        dircreatedirectory(buffer);
-    }
+	fs::create_directory(logDirectory);
 }
 
-void Logger::WriteExtended(LogLevel llevel, const char *func, const char *file, int line, const char* format,...)
-{
-    char tempbuf[1024];
-    memset((char*)&tempbuf[0],0,1024);
-    va_list args;
-    va_start(args, format);
-    vsprintf(tempbuf, format, args);
-    tempbuf[1023]=0;
-    Write(tempbuf,llevel,func,file,line);
-}
 
 

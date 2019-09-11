@@ -1,6 +1,7 @@
 #ifndef _LIST
 #define _LIST
 
+#include <cstddef>
 #include "Node.hpp"
 
 namespace CoreLib
@@ -12,44 +13,44 @@ namespace CoreLib
 		List();
 		virtual ~List();
 
-		void insert(const T data, int atpos);
+		void insert(const T data, size_t atpos);
 		void insert(const T data);
 		void append(const T data);
 
-		void insert(const T* data, int atpos);
+		void insert(const T* data, size_t atpos);
 		void insert(const T* data);
 		void append(const T* data);
 
 		void append(const List<T> &list);
 		void merge(const List<T> &list);
 
-		T* removeAt(int atpos);
+		T* removeAt(size_t atpos);
 		T* remove(const T data);
 		T* remove(const T* data);
 		T* truncate();
 
-		int count();
+		size_t count();
 		void sort();
-		int indexOf(const T data);
-		int indexOf(const T* data);
+		size_t indexOf(const T data);
+		size_t indexOf(const T* data);
 		void clear();
 
-		T* getAt(int atpos);
-		void setAt(int atpos, T data);
-		void setAt(int atpos, T* data);
+		T* getAt(size_t atpos);
+		void setAt(size_t atpos, T data);
+		void setAt(size_t atpos, T* data);
 		T* getFirst();
 		T* getLast();
 		T* getNext();
 		T* getPrevious();
 
-		T operator[](int index);
+		T operator[](size_t index);
 
 	private:
 		void copyNode(T* dest, const T* orig);
-		int search(const T* data, Node<T>* ptr);
+		size_t search(const T* data, Node<T>* ptr);
 		Node<T>* _First;
 		Node<T>* _Last;
-		int _Count;
+		size_t _Count;
 		Node<T>* _IteratorPosition;
 		bool _IsSorted;
 	};
@@ -71,7 +72,7 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	void List<T>::insert(const T* data, int atpos)
+	void List<T>::insert(const T* data, size_t atpos)
 	{
 		if (atpos > _Count || atpos < 0)
 		{
@@ -121,7 +122,7 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	void List<T>::insert(const T data, int atpos)
+	void List<T>::insert(const T data, size_t atpos)
 	{
 		T* tempdata = new T();
 		copyNode(tempdata, &data);
@@ -219,7 +220,7 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	T* List<T>::removeAt(int atpos)
+	T* List<T>::removeAt(size_t atpos)
 	{
 		T* ret = nullptr;
 
@@ -320,7 +321,7 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	int List<T>::count()
+	size_t List<T>::count()
 	{
 		return _Count;
 	}
@@ -357,13 +358,13 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	int List<T>::indexOf(const T data)
+	size_t List<T>::indexOf(const T data)
 	{
 		return indexOf(&data);
 	}
 
 	template <typename T>
-	int List<T>::indexOf(const T* data)
+	size_t List<T>::indexOf(const T* data)
 	{
 		Node<T> *ptr = nullptr;
 
@@ -371,7 +372,7 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	int List<T>::search(const T* data, Node<T> *ptr)
+	size_t List<T>::search(const T* data, Node<T> *ptr)
 	{
 		if (_Count < 1)
 		{
@@ -402,13 +403,13 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	void List<T>::setAt(int atpos, T data)
+	void List<T>::setAt(size_t atpos, T data)
 	{
 		setAt(atpos, &data);
 	}
 
 	template <typename T>
-	void List<T>::setAt(int atpos, T* data)
+	void List<T>::setAt(size_t atpos, T* data)
 	{
 		T* d = getAt(atpos);
 
@@ -419,7 +420,7 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	T *List<T>::getAt(int atpos)
+	T *List<T>::getAt(size_t atpos)
 	{
 		if (atpos > _Count - 1 || atpos < 0)
 		{
@@ -456,7 +457,7 @@ namespace CoreLib
 	}
 
 	template <typename T>
-	T List<T>::operator[](const int index)
+	T List<T>::operator[](const size_t index)
 	{
 		if (index < 0 || index >(_Count - 1))
 		{

@@ -1,7 +1,7 @@
 #ifndef _SIGNAL_HANDLER
 #define _SIGNAL_HANDLER
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	class SignalCallback
 	{

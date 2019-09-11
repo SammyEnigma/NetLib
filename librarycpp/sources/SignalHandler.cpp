@@ -8,7 +8,7 @@
 #include <sys/wait.h>
 #endif
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	// + BSD specific starts
 	#ifndef SIGSTKFLT
@@ -242,7 +242,7 @@ namespace CoreLibrary
 
 	void ignoredCallback(int sig, siginfo_t *siginfo, void *context)
 	{
-		if (::isShutdownSignal(sig))
+		if (isShutdownSignalImpl(sig))
 		{
 			shutdownCallback(sig, siginfo, context);
 			return;

@@ -6,7 +6,7 @@
     #include <string.h>
 #endif
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	Database *dataConnection = nullptr;
 

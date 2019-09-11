@@ -1,4 +1,5 @@
 #include "ProcessLock.hpp"
+#include "StringEx.hpp"
 #include <stdlib.h>
 
 #if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
@@ -14,14 +15,16 @@
     #include <string.h>
 #endif
 
-namespace CoreLibrary
+#include <vector>
+
+namespace CoreLib
 {
 	ProcessLock::ProcessLock()
 	{
 		_LockFile = 0;
 	}
 
-	bool ProcessLock::lockProcess(GenericString &lockfileame)
+	bool ProcessLock::lockProcess(std::string &lockfileame)
 	{
 		getLockFileName(_LockFileName);
 		if (_LockFile != 0 && _LockFile != -1)
@@ -30,10 +33,8 @@ namespace CoreLibrary
 			return false;
 		}
 
-		#if defined(_WIN32) || defined(WIN32)
-		return true;
-		#else
-		_LockFile = open(_LockFileName.buffer(), O_CREAT | O_RDWR, 0666);
+		#if !defined(_WIN32) || !defined(WIN32)
+		_LockFile = open(_LockFileName.c_str(), O_CREAT | O_RDWR, 0666);
 		if (_LockFile != -1)
 		{
 			off_t sz = 0;
@@ -62,12 +63,12 @@ namespace CoreLibrary
 		}
 		#endif
 
-		return false;
+		return true;
 	}
 
-	void ProcessLock::getLockFileName(GenericString &lockfileame)
+	void ProcessLock::getLockFileName(std::string &lockfileame)
 	{
-		GenericString procname, uname, tmpdir;
+		std::string procname, uname, tmpdir;
 		getProcessName(procname);
 		getUserName(uname);
 		getTempDir(tmpdir);
@@ -83,14 +84,13 @@ namespace CoreLibrary
 
 	ProcessLock::~ProcessLock()
 	{
-		#if defined(_WIN32) || defined(WIN32)
-		#else
+		#if !defined(_WIN32) || !defined(WIN32)
 		close(_LockFile);
 		#endif
 	}
 
 	#if defined(_WIN32) || defined(WIN32)
-	void ProcessLock::getProcessName(GenericString &processName)
+	void ProcessLock::getProcessName(std::string &processName)
 	{
 		int ownpid = getpid();
 
@@ -114,7 +114,7 @@ namespace CoreLibrary
 		}
 	}
 
-	void ProcessLock::getUserName(GenericString &uName)
+	void ProcessLock::getUserName(std::string &uName)
 	{
 		char buffer[256] = { 0 };
 		unsigned long sz = 255;
@@ -122,15 +122,22 @@ namespace CoreLibrary
 		uName = buffer;
 	}
 
-	void ProcessLock::getTempDir(GenericString &dirName)
+	void ProcessLock::getTempDir(std::string &dirName)
 	{
 		dirName = getenv("TEMP");
-		dirName.replace('\\', '/');
+
+		for (size_t idx = 0; dirName[idx] != '\0'; idx++)
+		{
+			if (dirName[idx] == '\\')
+			{
+				dirName[idx] = '/';
+			}
+		}
 	}
 
 	# else
 
-	void ProcessLock::getProcessName(GenericString &processName)
+	void ProcessLock::getProcessName(std::string &processName)
 	{
 		FILE *pipein_fp;
 		char readbuf[80] = { 0 };
@@ -178,33 +185,33 @@ namespace CoreLibrary
 				continue;
 			}
 
-			List<GenericString> strlist;
+			std::vector<std::string> strlist;
 
-			GenericString tempreadbuf(readbuf);
+			std::string tempreadbuf(readbuf);
 
-			tempreadbuf.getSubStringList(strlist, ' ');
+			strsplit(tempreadbuf, strlist, ' ');
 
-			if (strlist.count() < 2)
+			if (strlist.size() < 2)
 			{
 				continue;
 			}
 
-			processName = *strlist.getAt(1);
-			processName.remove('.');
-			processName.remove('&');
-			processName.remove('/');
+			processName = strlist[1];
+			strremove(processName, '.');
+			strremove(processName, '&');
+			strremove(processName, '/');
 
 		}
 		// Close the pipes
 		pclose(pipein_fp);
 	}
 
-	void ProcessLock::getUserName(GenericString &uName)
+	void ProcessLock::getUserName(std::string &uName)
 	{
 		uName = getenv("USER");
 	}
 
-	void ProcessLock::getTempDir(GenericString &dirName)
+	void ProcessLock::getTempDir(std::string &dirName)
 	{
 		dirName = "/tmp";
 	}

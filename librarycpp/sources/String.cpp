@@ -1,9 +1,10 @@
 #include "String.hpp"
 #include "Base64.hpp"
-#include "Character.hpp"
-//#include <memory.h>
-//#include <stdlib.h>
-//#include <stdio.h>
+#include <ctype.h>
+#include <memory.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 namespace CoreLib
 {
@@ -11,25 +12,8 @@ namespace CoreLib
 #define strtoull(str, endptr, base) _strtoui64(str, endptr, base)
 #endif
 
-	const long PAGE_SIZE = 1024 * sizeof(void*);
-
-	int numPages(int x);
-	int stringLen(const char *ptr);
-	int stringCompare(const char *dest, const char*orig, int len);
-	void stringReset(char *ptr, int len);
-	void stringCopy(char *dest, const char*orig, int len);
-	void stringMove(char *dest, const char*orig, int len);
-
-	void convertToString(char*ptr, long long num);
-	void convertToString(char*ptr, double num);
-
-	int convertToInt(const char* str);
-	long convertToLong(const char* str);
-	long long convertToLongLong(const char* str);
-	double convertToLDouble(const char* str);
-	
-	int searchForSubstring(char *pat, char *txt);
-	void computeLPSArray(char *pat, int M, int *lps);
+	const size_t PAGE_SIZE = 1024 * sizeof(void*);
+	size_t numPages(size_t x);
 
 	String::String()
 	{
@@ -40,15 +24,15 @@ namespace CoreLib
 		_BufferLen = PAGE_SIZE;
 		
 		_Buffer = new char[_BufferLen];
-		stringReset(_Buffer,_BufferLen);
+		memset(_Buffer, 0, _BufferLen);
 	}
 
-	String::String(long len)
+	String::String(size_t len)
 	{
 		_StringLen = len;
 		_BufferLen = numPages(_StringLen + 1)*PAGE_SIZE;
 		_Buffer = new char[_BufferLen];
-		stringReset(_Buffer, _BufferLen);
+		memset(_Buffer, 0, _BufferLen);
 	}
 
 	String::String(const String &obj)
@@ -58,8 +42,8 @@ namespace CoreLib
 			_StringLen = obj._StringLen;
 			_BufferLen = obj._BufferLen;
 			_Buffer = new char[_BufferLen];
-			stringReset(_Buffer, _BufferLen);
-			stringCopy(_Buffer, obj._Buffer, _StringLen);
+			memset(_Buffer, 0, _BufferLen);
+			strcpy(_Buffer, obj._Buffer);
 		}
 	}
 
@@ -72,8 +56,8 @@ namespace CoreLib
 				_StringLen = ptr->_StringLen;
 				_BufferLen = ptr->_BufferLen;
 				_Buffer = new char[_BufferLen];
-				stringReset(_Buffer, _BufferLen);
-				stringCopy(_Buffer, ptr->_Buffer, _StringLen);
+				memset(_Buffer, 0, _BufferLen);
+				strcpy(_Buffer, ptr->_Buffer);
 			}
 		}
 	}
@@ -86,7 +70,7 @@ namespace CoreLib
 
 			_BufferLen = numPages(_StringLen + 1)*PAGE_SIZE;
 			_Buffer = new char[_BufferLen];
-			stringReset(_Buffer, _BufferLen);
+			memset(_Buffer, 0, _BufferLen);
 
 			for (int idx = 0; idx < _StringLen; idx++)
 			{
@@ -99,23 +83,23 @@ namespace CoreLib
 	{
 		if (ptr != nullptr)
 		{
-			_StringLen = stringLen(ptr);
+			_StringLen = strlen(ptr);
 			_BufferLen = numPages(_StringLen + 1)*PAGE_SIZE;
 			_Buffer = new char[_BufferLen];
-			stringReset(_Buffer, _BufferLen);
-			stringCopy(_Buffer, ptr, _StringLen);
+			memset(_Buffer, 0, _BufferLen);
+			strcpy(_Buffer, ptr);
 		}
 	}
 
-	String::String(const char* ptr, int startpos, int endpos)
+	String::String(const char* ptr, size_t startpos, size_t endpos)
 	{
 		if (ptr != nullptr)
 		{
 			_StringLen = endpos - startpos;
 			_BufferLen = numPages(_StringLen + 1)*PAGE_SIZE;
 			_Buffer = new char[_BufferLen];
-			stringReset(_Buffer, _BufferLen);
-			stringCopy(_Buffer, &ptr[startpos], _StringLen);
+			memset(_Buffer, 0, _BufferLen);
+			strcpy(_Buffer, &ptr[startpos]);
 		}
 	}
 
@@ -131,16 +115,11 @@ namespace CoreLib
 		_StringLen = 0;
 	}
 
-	long String::length(const char* ptr)
-	{
-		return stringLen(ptr);
-	}
-
 	bool String::operator!=(const String& other)
 	{
 		int complen = (_StringLen > other._StringLen) ? other._StringLen : _StringLen;
 
-		if (stringCompare(_Buffer, other._Buffer, complen) != 0)
+		if (strcmp(_Buffer, other._Buffer) != 0)
 		{
 			return true;
 		}
@@ -152,7 +131,7 @@ namespace CoreLib
 	{
 		int complen = (_StringLen > other._StringLen) ? other._StringLen : _StringLen;
 
-		if (stringCompare(_Buffer, other._Buffer, complen) == 0)
+		if (strcmp(_Buffer, other._Buffer) == 0)
 		{
 			return true;
 		}
@@ -164,7 +143,7 @@ namespace CoreLib
 	{
 		int complen = (_StringLen > other._StringLen) ? other._StringLen : _StringLen;
 
-		if (stringCompare(_Buffer, other._Buffer, complen) > 0)
+		if (strcmp(_Buffer, other._Buffer) > 0)
 		{
 			return true;
 		}
@@ -176,7 +155,7 @@ namespace CoreLib
 	{
 		int complen = (_StringLen > other._StringLen) ? other._StringLen : _StringLen;
 
-		if (stringCompare(_Buffer, other._Buffer, complen) < 0)
+		if (strcmp(_Buffer, other._Buffer) < 0)
 		{
 			return true;
 		}
@@ -190,8 +169,8 @@ namespace CoreLib
 		_StringLen = other._StringLen;
 		_BufferLen = other._BufferLen;
 		_Buffer = new char[_BufferLen];
-		stringReset(_Buffer, _BufferLen);
-		stringCopy(_Buffer, other._Buffer, _StringLen);
+		memset(_Buffer, 0, _BufferLen);
+		strcpy(_Buffer, other._Buffer);
 		_Buffer[_StringLen] = 0;
 
 		return;
@@ -199,20 +178,20 @@ namespace CoreLib
 
 	String& String::operator+=(const String& other)
 	{
-		int len = _StringLen + other._StringLen;
+		size_t len = _StringLen + other._StringLen;
 
 		if (len < _BufferLen)
 		{
-			stringCopy(_Buffer + _StringLen, other._Buffer, other._StringLen);
+			strcpy(_Buffer + _StringLen, other._Buffer);
 			_StringLen = len;
 		}
 		else
 		{
-			int bufferlen = numPages(len + 1)*PAGE_SIZE;
+			size_t bufferlen = numPages(len + 1)*PAGE_SIZE;
 			char *buffer = new char[bufferlen];
-			stringReset(buffer, bufferlen);
-			stringCopy(buffer, _Buffer, _StringLen);
-			stringCopy(buffer + _StringLen, other._Buffer, other._StringLen);
+			memset(buffer, 0, bufferlen);
+			strcpy(buffer, _Buffer);
+			strcpy(buffer + _StringLen, other._Buffer);
 
 			_StringLen = len;
 			_BufferLen = bufferlen;
@@ -225,7 +204,7 @@ namespace CoreLib
 
 	String& String::operator+=(const char& other)
 	{
-		int len = _StringLen + 1;
+		size_t len = _StringLen + 1;
 
 		if (len < _BufferLen)
 		{
@@ -235,10 +214,10 @@ namespace CoreLib
 		}
 		else
 		{
-			int bufferlen = numPages(len + 1)*PAGE_SIZE;
+			size_t bufferlen = numPages(len + 1)*PAGE_SIZE;
 			char *buffer = new char[bufferlen];
-			stringReset(buffer, bufferlen);
-			stringCopy(buffer, _Buffer, _StringLen);
+			memset(buffer, 0, bufferlen);
+			strcpy(buffer, _Buffer);
 			_Buffer[_StringLen] = other;
 
 			_StringLen++;
@@ -253,22 +232,22 @@ namespace CoreLib
 	String& String::operator+=(const long& other)
 	{
 		char tempbuffer[32] = { 0 };
-		convertToString(&tempbuffer[0], (long long)other);
+		sprintf(tempbuffer, "%lld", (long long)other);
 
-		int len = _StringLen + stringLen(tempbuffer);
+		int len = _StringLen + strlen(tempbuffer);
 
 		if (len < _BufferLen)
 		{
-			stringCopy(_Buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+			strcpy(_Buffer + _StringLen, tempbuffer);
 			_StringLen = len;
 		}
 		else
 		{
 			int bufferlen = numPages(len + 1)*PAGE_SIZE;
 			char *buffer = new char[bufferlen];
-			stringReset(buffer, bufferlen);
-			stringCopy(buffer, _Buffer, _StringLen);
-			stringCopy(buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+			memset(buffer, 0, bufferlen);
+			strcpy(buffer, _Buffer);
+			strcpy(buffer + _StringLen, tempbuffer);
 
 			_StringLen = len;
 			_BufferLen = bufferlen;
@@ -282,22 +261,22 @@ namespace CoreLib
 	String& String::operator+=(const int& other)
 	{
 		char tempbuffer[32] = { 0 };
-		convertToString(&tempbuffer[0], (long long)other);
+		sprintf(tempbuffer, "%lld", (long long)other);
 
-		int len = _StringLen + stringLen(tempbuffer);
+		int len = _StringLen + strlen(tempbuffer);
 
 		if (len < _BufferLen)
 		{
-			stringCopy(_Buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+			strcpy(_Buffer + _StringLen, tempbuffer);
 			_StringLen = len;
 		}
 		else
 		{
 			int bufferlen = numPages(len + 1)*PAGE_SIZE;
 			char *buffer = new char[bufferlen];
-			stringReset(buffer, bufferlen);
-			stringCopy(buffer, _Buffer, _StringLen);
-			stringCopy(buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+			memset(buffer, 0, bufferlen);
+			strcpy(buffer, _Buffer);
+			strcpy(buffer + _StringLen, tempbuffer);
 
 			_StringLen = len;
 			_BufferLen = bufferlen;
@@ -311,22 +290,22 @@ namespace CoreLib
 	String& String::operator+=(const double& other)
 	{
 		char tempbuffer[32] = { 0 };
-		convertToString(&tempbuffer[0], (double)other);
+		sprintf(tempbuffer, "%f", (double)other);
 
-		int len = _StringLen + stringLen(tempbuffer);
+		size_t len = _StringLen + strlen(tempbuffer);
 
 		if (len < _BufferLen)
 		{
-			stringCopy(_Buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+			strcpy(_Buffer + _StringLen, tempbuffer);
 			_StringLen = len;
 		}
 		else
 		{
-			int bufferlen = numPages(len + 1)*PAGE_SIZE;
+			size_t bufferlen = numPages(len + 1)*PAGE_SIZE;
 			char *buffer = new char[bufferlen];
-			stringReset(buffer, bufferlen);
-			stringCopy(buffer, _Buffer, _StringLen);
-			stringCopy(buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+			memset(buffer, 0, bufferlen);
+			strcpy(buffer, _Buffer);
+			strcpy(buffer + _StringLen, tempbuffer);
 
 			_StringLen = len;
 			_BufferLen = bufferlen;
@@ -344,9 +323,9 @@ namespace CoreLib
 		returnvalue._StringLen = _StringLen + other._StringLen;
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
 		returnvalue._Buffer = new char[returnvalue._BufferLen];
-		stringReset(returnvalue._Buffer, returnvalue._BufferLen);
-		stringCopy(returnvalue._Buffer, _Buffer, _StringLen);
-		stringCopy(returnvalue._Buffer + _StringLen, other._Buffer, other._StringLen);
+		memset(returnvalue._Buffer, 0, returnvalue._BufferLen);
+		strcpy(returnvalue._Buffer, _Buffer);
+		strcpy(returnvalue._Buffer + _StringLen, other._Buffer);
 
 		return returnvalue;
 	}
@@ -358,8 +337,8 @@ namespace CoreLib
 		returnvalue._StringLen = _StringLen + 1;
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
 		returnvalue._Buffer = new char[returnvalue._BufferLen];
-		stringReset(returnvalue._Buffer, returnvalue._BufferLen);
-		stringCopy(returnvalue._Buffer, _Buffer, _StringLen);
+		memset(returnvalue._Buffer, 0, returnvalue._BufferLen);
+		strcpy(returnvalue._Buffer, _Buffer);
 		returnvalue._Buffer[_StringLen] = other;
 
 		return returnvalue;
@@ -368,16 +347,16 @@ namespace CoreLib
 	String String::operator+(const long& other)
 	{
 		char tempbuffer[32] = { 0 };
-		convertToString(&tempbuffer[0], (long long)other);
+		sprintf(tempbuffer, "%lld", (long long)other);
 
 		String returnvalue;
 
-		returnvalue._StringLen = _StringLen + stringLen(tempbuffer);
+		returnvalue._StringLen = _StringLen + strlen(tempbuffer);
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
 		returnvalue._Buffer = new char[returnvalue._BufferLen];
-		stringReset(returnvalue._Buffer, returnvalue._BufferLen);
-		stringCopy(returnvalue._Buffer, _Buffer, _StringLen);
-		stringCopy(returnvalue._Buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+		memset(returnvalue._Buffer, 0, returnvalue._BufferLen);
+		strcpy(returnvalue._Buffer, _Buffer);
+		strcpy(returnvalue._Buffer + _StringLen, tempbuffer);
 
 		return returnvalue;
 	}
@@ -385,16 +364,16 @@ namespace CoreLib
 	String String::operator+(const int& other)
 	{
 		char tempbuffer[32] = { 0 };
-		convertToString(&tempbuffer[0], (long long)other);
+		sprintf(tempbuffer, "%lld", (long long)other);
 
 		String returnvalue;
 
-		returnvalue._StringLen = _StringLen + stringLen(tempbuffer);
+		returnvalue._StringLen = _StringLen + strlen(tempbuffer);
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
 		returnvalue._Buffer = new char[returnvalue._BufferLen];
-		stringReset(returnvalue._Buffer, returnvalue._BufferLen);
-		stringCopy(returnvalue._Buffer, _Buffer, _StringLen);
-		stringCopy(returnvalue._Buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+		memset(returnvalue._Buffer, 0, returnvalue._BufferLen);
+		strcpy(returnvalue._Buffer, _Buffer);
+		strcpy(returnvalue._Buffer + _StringLen, tempbuffer);
 
 		return returnvalue;
 	}
@@ -402,31 +381,31 @@ namespace CoreLib
 	String String::operator+(const double& other)
 	{
 		char tempbuffer[32] = { 0 };
-		convertToString(&tempbuffer[0], (double)other);
+		sprintf(tempbuffer, "%f", (double)other);
 
 		String returnvalue;
 
-		returnvalue._StringLen = _StringLen + stringLen(tempbuffer);
+		returnvalue._StringLen = _StringLen + strlen(tempbuffer);
 		returnvalue._BufferLen = numPages(returnvalue._StringLen + 1)*PAGE_SIZE;
 		returnvalue._Buffer = new char[returnvalue._BufferLen];
-		stringReset(returnvalue._Buffer, returnvalue._BufferLen);
-		stringCopy(returnvalue._Buffer, _Buffer, _StringLen);
-		stringCopy(returnvalue._Buffer + _StringLen, tempbuffer, stringLen(tempbuffer));
+		memset(returnvalue._Buffer, 0, returnvalue._BufferLen);
+		strcpy(returnvalue._Buffer, _Buffer);
+		strcpy(returnvalue._Buffer + _StringLen, tempbuffer);
 
 		return returnvalue;
 	}
 
-	char String::getAt(const int atpos) const
+	char String::getAt(const size_t atpos) const
 	{
 		return _Buffer[atpos];
 	}
 
-	void String::SetAt(const int atpos, const char ch)
+	void String::SetAt(const size_t atpos, const char ch)
 	{
 		_Buffer[atpos] = ch;
 	}
 
-	char& String::operator[](const long index)
+	char& String::operator[](const size_t index)
 	{
 		if (index < 0 || index >(_StringLen - 1))
 		{
@@ -472,7 +451,7 @@ namespace CoreLib
 		}
 
 		_StringLen = 0;
-		stringReset(_Buffer, _BufferLen);
+		memset(_Buffer, 0, _BufferLen);
 	}
 
 	void String::assign(const char *ptr)
@@ -480,15 +459,15 @@ namespace CoreLib
 		if (ptr != nullptr)
 		{
 			clear();
-			_StringLen = stringLen(ptr);
+			_StringLen = strlen(ptr);
 			_BufferLen = numPages(_StringLen + 1)*PAGE_SIZE;
 			_Buffer = new char[_BufferLen];
-			stringReset(_Buffer, _BufferLen);
-			stringCopy(_Buffer, ptr, _StringLen);
+			memset(_Buffer, 0, _BufferLen);
+			strcpy(_Buffer, ptr);
 		}
 	}
 
-	void String::assign(const char *ptr, int startpos, int endpos)
+	void String::assign(const char *ptr, size_t startpos, size_t endpos)
 	{
 		if (ptr != nullptr)
 		{
@@ -496,12 +475,12 @@ namespace CoreLib
 			_StringLen = endpos - startpos;
 			_BufferLen = numPages(_StringLen + 1)*PAGE_SIZE;
 			_Buffer = new char[_BufferLen];
-			stringReset(_Buffer, _BufferLen);
-			stringCopy(_Buffer, &ptr[startpos], _StringLen);
+			memset(_Buffer, 0, _BufferLen);
+			strcpy(_Buffer, &ptr[startpos]);
 		}
 	}
 
-	long String::length() const
+	size_t String::length() const
 	{
 		return _StringLen;
 	}
@@ -511,19 +490,19 @@ namespace CoreLib
 		return _Buffer;
 	}
 
-	int String::indexOf(const String &obj, int startpos) const
+	size_t String::indexOf(const String &obj, size_t startpos) const
 	{
 		return indexOf(obj._Buffer, startpos);
 	}
 
-	int String::indexOf(const char* ptr, int startpos) const
+	size_t String::indexOf(const char* ptr, size_t startpos) const
 	{
 		int result = -1;
 
 		if (ptr != nullptr)
 		{
 
-			char* pdest = (char*)searchForSubstring(_Buffer + startpos, (char*)ptr);
+			char* pdest = (char*)strstr(_Buffer + startpos, (char*)ptr);
 
 			if (pdest == 0)
 			{
@@ -536,7 +515,7 @@ namespace CoreLib
 		return result;
 	}
 
-	int String::indexOf(const char ch, int startpos) const
+	size_t String::indexOf(const char ch, size_t startpos) const
 	{
 		for (int ctr = startpos; _Buffer[ctr] != '\0'; ctr++)
 		{
@@ -549,7 +528,7 @@ namespace CoreLib
 		return -1;
 	}
 
-	void String::getSubString(int pos, int len, String &substr) const
+	void String::getSubString(size_t pos, size_t len, String &substr) const
 	{
 		if (_StringLen - pos < len)
 		{
@@ -557,13 +536,13 @@ namespace CoreLib
 		}
 
 		char* ptr = new char[len + 1];
-		stringReset(ptr, len + 1);
-		stringCopy(_Buffer + pos, ptr, len);
+		memset(ptr, 0, len + 1);
+		strcpy(_Buffer + pos, ptr);
 		substr.assign(ptr);
 		delete[]ptr;
 	}
 
-	int String::getInt(int pos, int len) const
+	int String::getInt(size_t pos, size_t len) const
 	{
 		if (_StringLen - pos < len)
 		{
@@ -573,11 +552,11 @@ namespace CoreLib
 		String str;
 
 		str.assign(_Buffer, pos, pos + len);
-		int res = convertToInt(str.buffer());
+		int res = atoi(str._Buffer);
 		return res;
 	}
 
-	long String::getLong(int pos, int len) const
+	long String::getLong(size_t pos, size_t len) const
 	{
 		if (_StringLen - pos < len)
 		{
@@ -587,11 +566,11 @@ namespace CoreLib
 		String str;
 
 		str.assign(_Buffer, pos, pos + len);
-		long res = convertToLong(str.buffer());
+		long res = atol(str._Buffer);
 		return res;
 	}
 
-	long long String::getLongLong(int pos, int len) const
+	long long String::getLongLong(size_t pos, size_t len) const
 	{
 		if (_StringLen - pos < len)
 		{
@@ -601,54 +580,27 @@ namespace CoreLib
 		String str;
 
 		str.assign(_Buffer, pos, pos + len);
-		long long res = convertToLongLong(str.buffer());
+		long long res = strtoull(str._Buffer, NULL, 0);
 		return res;
 	}
 
-	unsigned int String::getUnsignedInt(int pos, int len) const
+	unsigned int String::getUnsignedInt(size_t pos, size_t len) const
 	{
-		if (_StringLen - pos < len)
-		{
-			len = _StringLen - pos;
-		}
-
-		String str;
-
-		str.assign(_Buffer, pos, pos + len);
-		unsigned int res = convertToInt(str.buffer());
-		return res;
+		return (unsigned int)getInt(pos, len);
 	}
 
-	unsigned long String::getUnsignedLong(int pos, int len) const
+	unsigned long String::getUnsignedLong(size_t pos, size_t len) const
 	{
-		if (_StringLen - pos < len)
-		{
-			len = _StringLen - pos;
-		}
-
-		String str;
-
-		str.assign(_Buffer, pos, pos + len);
-		unsigned long res = convertToLong(str.buffer());
-		return res;
+		return (unsigned long)getLong(pos, len);
 	}
 
-	unsigned long long String::getUnsignedLongLong(int pos, int len) const
+	unsigned long long String::getUnsignedLongLong(size_t pos, size_t len) const
 	{
-		if (_StringLen - pos < len)
-		{
-			len = _StringLen - pos;
-		}
-
-		String str;
-
-		str.assign(_Buffer, pos, pos + len);
-		unsigned long long res = convertToLongLong(str.buffer());
-		return res;
+		return (unsigned long long)getLongLong(pos, len);
 	}
 
 
-	double String::getDouble(int pos, int len) const
+	double String::getDouble(size_t pos, size_t len) const
 	{
 		if (_StringLen - pos < len)
 		{
@@ -658,7 +610,7 @@ namespace CoreLib
 		String str;
 
 		str.assign(_Buffer, pos, pos + len);
-		double res = convertToLDouble(str.buffer());
+		double res = atof(str._Buffer);
 		return res;
 	}
 
@@ -697,37 +649,33 @@ namespace CoreLib
 		return getDouble(0, _StringLen);
 	}
 
-	int String::countOf(const String &obj) const
+	size_t String::countOf(const String &obj) const
 	{
 		return countOf(obj._Buffer);
 	}
 
-	int String::countOf(const char* ptr) const
+	size_t String::countOf(const char* ptr) const
 	{
 		int count = 0;
-		int pos = 0;
-		int offset = stringLen(ptr);
 
-		while (true)
+		char* str = &_Buffer[0];
+
+		char* token = strtok(str, ptr);
+
+		while (token != nullptr)
 		{
-			const char* temp = &ptr[searchForSubstring(&_Buffer[pos], (char*)ptr)];
-			if (temp == nullptr)
-			{
-				break;
-			}
-
 			count++;
 
-			pos = (temp - _Buffer) + offset;
+			token = strtok(NULL, ptr);
 		}
 
 		return count;
 	}
 
-	int String::countOf(const char ch) const
+	size_t String::countOf(const char ch) const
 	{
-		int c = 0;
-		for (int i = 0; _Buffer[i] != '\0'; i++)
+		size_t c = 0;
+		for (size_t i = 0; _Buffer[i] != '\0'; i++)
 		{
 			if (_Buffer[i] == ch)
 			{
@@ -740,7 +688,7 @@ namespace CoreLib
 
 	void String::toLower()
 	{
-		for (int ctr = 0; _Buffer[ctr] != '\0'; ctr++)
+		for (size_t ctr = 0; _Buffer[ctr] != '\0'; ctr++)
 		{
 			if (_Buffer[ctr] >= 65 && _Buffer[ctr] <= 90)
 			{
@@ -751,7 +699,7 @@ namespace CoreLib
 
 	void String::toUpper()
 	{
-		for (int ctr = 0; _Buffer[ctr] != '\0'; ctr++)
+		for (size_t ctr = 0; _Buffer[ctr] != '\0'; ctr++)
 		{
 			if (_Buffer[ctr] >= 97 && _Buffer[ctr] <= 122)
 			{
@@ -768,7 +716,7 @@ namespace CoreLib
 
 		int trimlen = 0;
 
-		while (Character::isSpace(*ptr))
+		while (isspace(*ptr))
 		{
 			ptr++;
 			trimlen++;
@@ -788,7 +736,7 @@ namespace CoreLib
 	{
 		for (int ctr = _StringLen - 1; ctr > -1; ctr--)
 		{
-			if (Character::isSpace(_Buffer[ctr]))
+			if (isspace(_Buffer[ctr]))
 			{
 				_Buffer[ctr] = '\0';
 			}
@@ -822,8 +770,8 @@ namespace CoreLib
 			{
 				_BufferLen = newbufferlen;
 				char *ptr = new char[_BufferLen];
-				stringReset(ptr, _BufferLen);
-				stringCopy(ptr, _Buffer, _StringLen);
+				memset(ptr, 0, _BufferLen);
+				strcpy(ptr, _Buffer);
 				delete[]_Buffer;
 				_Buffer = ptr;
 			}
@@ -838,11 +786,11 @@ namespace CoreLib
 				break;
 			}
 
-			stringMove(_Buffer + substrpos + newpattern._StringLen, _Buffer + substrpos + oldpattern._StringLen, _StringLen + diff);
-			stringCopy(_Buffer + substrpos, newpattern._Buffer, newpattern._StringLen);
+			memmove(_Buffer + substrpos + newpattern._StringLen, _Buffer + substrpos + oldpattern._StringLen, _StringLen + diff);
+			strcpy(_Buffer + substrpos, newpattern._Buffer);
 		}
 
-		_StringLen = stringLen(_Buffer);
+		_StringLen = strlen(_Buffer);
 	}
 
 	void String::replace(const char oldchar, const char newchar)
@@ -859,21 +807,21 @@ namespace CoreLib
 	void String::replace(const String &oldpattern, const long npattern)
 	{
 		char buffer[32] = { 0 };
-		convertToString(&buffer[0], (long long)npattern);
+		sprintf(buffer, "%lld", (long long)npattern);
 		replace(oldpattern, buffer);
 	}
 
 	void String::replace(const String &oldpattern, const double npattern)
 	{
 		char buffer[32] = { 0 };
-		convertToString(&buffer[0], (double)npattern);
+		sprintf(buffer, "%f", (double)npattern);
 		replace(oldpattern, buffer);
 	}
 
 	void String::replace(const String &oldpattern, const int npattern)
 	{
 		char buffer[32] = { 0 };
-		convertToString(&buffer[0], (long long)npattern);
+		sprintf(buffer, "%lld", (long long)npattern);
 		replace(oldpattern, buffer);
 	}
 
@@ -890,7 +838,7 @@ namespace CoreLib
 				break;
 			}
 
-			stringMove(&_Buffer[idxToDel], &_Buffer[idxToDel + oldpattern._StringLen], _StringLen - idxToDel);
+			memmove(&_Buffer[idxToDel], &_Buffer[idxToDel + oldpattern._StringLen], _StringLen - idxToDel);
 			_Buffer[_StringLen - oldpattern._StringLen] = 0;
 			_StringLen = _StringLen - oldpattern._StringLen;
 		}
@@ -909,7 +857,7 @@ namespace CoreLib
 				break;
 			}
 
-			stringMove(&_Buffer[idxToDel], &_Buffer[idxToDel + 1], _StringLen - idxToDel);
+			memmove(&_Buffer[idxToDel], &_Buffer[idxToDel + 1], _StringLen - idxToDel);
 			_Buffer[_StringLen - 1] = 0;
 			_StringLen--;
 		}
@@ -946,16 +894,16 @@ namespace CoreLib
 		while (removeFirst(oldchar)) {}
 	}
 
-	void String::removeAt(int pos, int len)
+	void String::removeAt(size_t pos, size_t len)
 	{
-		stringMove(&_Buffer[pos], &_Buffer[pos + len], _StringLen - len);
+		memmove(&_Buffer[pos], &_Buffer[pos + len], _StringLen - len);
 		_Buffer[_StringLen - len] = 0;
 		_StringLen = _StringLen - len;
 	}
 
 	void String::getKeyValuePair(String &key, String &value, const char delimiter)
 	{
-		int pos = indexOf(delimiter);
+		size_t pos = indexOf(delimiter);
 
 		if (pos < 0)
 			return;
@@ -969,7 +917,7 @@ namespace CoreLib
 
 	void String::getKeyValuePair(String &key, String &value, const String &delimiter)
 	{
-		int pos = indexOf(delimiter);
+		size_t pos = indexOf(delimiter);
 
 		if (pos > 0)
 		{
@@ -980,9 +928,9 @@ namespace CoreLib
 
 	void String::getSubStringList(List<String> &tokens, const char delimiter)
 	{
-		int delimpos = -1;
-		int offset = 1;
-		int startpos = 0;
+		size_t delimpos = -1;
+		size_t offset = 1;
+		size_t startpos = 0;
 
 		while (true)
 		{
@@ -1009,9 +957,9 @@ namespace CoreLib
 
 	void String::getSubStringList(List<String> &tokens, const String &delimiter)
 	{
-		int delimpos = -1;
-		int offset = delimiter._StringLen;
-		int startpos = 0;
+		size_t delimpos = -1;
+		size_t offset = delimiter._StringLen;
+		size_t startpos = 0;
 
 		while (true)
 		{
@@ -1038,9 +986,9 @@ namespace CoreLib
 
 	void String::join(List<String> &tokens, String &newString, const char delimiter)
 	{
-		int count = tokens.count();
+		size_t count = tokens.count();
 
-		for (int idx = 0; idx < count; idx++)
+		for (size_t idx = 0; idx < count; idx++)
 		{
 			newString += tokens.getAt(idx);
 
@@ -1053,9 +1001,9 @@ namespace CoreLib
 
 	void String::join(List<String> &tokens, String &newString, const String &delimiter)
 	{
-		int count = tokens.count();
+		size_t count = tokens.count();
 
-		for (int idx = 0; idx < count; idx++)
+		for (size_t idx = 0; idx < count; idx++)
 		{
 			newString += tokens.getAt(idx);
 
@@ -1071,7 +1019,7 @@ namespace CoreLib
 		reverse(0, _StringLen);
 	}
 
-	void String::reverse(int start, int len)
+	void String::reverse(size_t start, size_t len)
 	{
 		int term = len - 1;
 
@@ -1087,10 +1035,10 @@ namespace CoreLib
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	int numPages(int x)
+	size_t numPages(size_t x)
 	{
-		int d = x / PAGE_SIZE;
-		int m = x % PAGE_SIZE;
+		size_t d = x / PAGE_SIZE;
+		size_t m = x % PAGE_SIZE;
 
 		if (m != 0)
 		{
@@ -1098,297 +1046,6 @@ namespace CoreLib
 		}
 
 		return (d + m);
-	}
-
-	int stringLen(const char *ptr)
-	{
-		char *p = (char*)ptr;
-		int s = 0;
-		while (*p++) s++;
-		return s;
-	}
-
-	int stringCompare(const char *dest, const char*orig, int len)
-	{
-		return 0;
-	}
-
-	void stringReset(char *ptr, int len)
-	{
-		for (int ctr = 0; ctr < len; ctr++)
-		{
-			ptr[ctr] = 0;
-		}
-	}
-
-	void stringCopy(char *dest, const char*orig, int len)
-	{
-		for (int ctr = 0; ctr < len; ctr++)
-		{
-			dest[ctr] = orig[ctr];
-		}
-	}
-
-	void stringMove(char *dest, const char*orig, int len)
-	{
-		//for (int ctr = 0; ctr < len; ctr++)
-		//{
-		//	dest[ctr] = orig[ctr];
-		//}
-	}
-
-	void convertToString(char*ptr, long long num)
-	{
-		long long sign = 1;
-		long long remainder = 1;
-		long long dividend = num;
-		long ctr = 0;
-
-		if (num < 1)
-		{
-			sign = -1;
-			dividend = dividend*-1;
-		}
-
-		while (dividend)
-		{
-			remainder = dividend % 10;
-			dividend = dividend / 10;
-
-			ptr[ctr] = remainder + 48;
-			ctr++;
-		}
-
-		if (sign < 1)
-		{
-			ptr[ctr] = '-';
-		}
-		else
-		{
-			ctr--;
-		}
-
-
-		long long start = 0;
-
-		while (start < ctr)
-		{
-			char temp = ptr[start];
-			ptr[start] = ptr[ctr];
-			ptr[ctr] = temp;
-			start++;
-			ctr--;
-		}
-	}
-
-	void convertToString(char*ptr, double num)
-	{
-
-	}
-
-	int convertToInt(const char* str)
-	{
-		int sign = 0;
-		int index = 0;
-		int result = 0;
-
-		if (str == nullptr)
-		{
-			return 0;
-		}
-
-		if (stringLen(str) < 2)
-		{
-			return 0;
-		}
-
-		if (str[0] == '-')
-		{
-			sign = -1;
-			index = 1;
-		}
-		else
-		{
-			sign = 1;
-			index = 0;
-		}
-
-		for (; str[index] != '\0'; index++)
-		{
-			if (!Character::isNumber(str[index]))
-			{
-				break;
-			}
-
-			result = result * 10 + str[index] - '0';
-		}
-
-		return result*sign;
-	}
-
-	long convertToLong(const char* str)
-	{
-		long sign = 0;
-		long index = 0;
-		long result = 0;
-
-		if (str == nullptr)
-		{
-			return 0;
-		}
-
-		if (stringLen(str) < 2)
-		{
-			return 0;
-		}
-
-		if (str[0] == '-')
-		{
-			sign = -1;
-			index = 1;
-		}
-		else
-		{
-			sign = 1;
-			index = 0;
-		}
-
-		for (; str[index] != '\0'; index++)
-		{
-			if (!Character::isNumber(str[index]))
-			{
-				break;
-			}
-
-			result = result * 10 + str[index] - '0';
-		}
-
-		return result*sign;
-	}
-
-	long long convertToLongLong(const char* str)
-	{
-		long long sign = 0;
-		long long index = 0;
-		long long result = 0;
-
-		if (str == nullptr)
-		{
-			return 0;
-		}
-
-		if (stringLen(str) < 2)
-		{
-			return 0;
-		}
-
-		if (str[0] == '-')
-		{
-			sign = -1;
-			index = 1;
-		}
-		else
-		{
-			sign = 1;
-			index = 0;
-		}
-
-		for (; str[index] != '\0'; index++)
-		{
-			if (!Character::isNumber(str[index]))
-			{
-				break;
-			}
-
-			result = result * 10 + str[index] - '0';
-		}
-
-		return result*sign;
-	}
-
-	double convertToLDouble(const char* str)
-	{
-		return 0.0;
-	}
-
-	int searchForSubstring(char *pat, char *txt)
-	{
-		int M = stringLen(pat);
-		int N = stringLen(txt);
-
-		// create lps[] that will hold the longest prefix suffix
-		// values for pattern
-		int* lps = new int[M];
-
-		// Preprocess the pattern (calculate lps[] array)
-		computeLPSArray(pat, M, lps);
-
-		int i = 0;  // index for txt[]
-		int j = 0;  // index for pat[]
-		while (i < N)
-		{
-			if (pat[j] == txt[i])
-			{
-				j++;
-				i++;
-			}
-
-			if (j == M)
-			{
-				return (i - j);
-				//j = lps[j - 1];
-			}
-
-			// mismatch after j matches
-			else if (i < N && pat[j] != txt[i])
-			{
-				// Do not match lps[0..lps[j-1]] characters,
-				// they will match anyway
-				if (j != 0)
-					j = lps[j - 1];
-				else
-					i = i + 1;
-			}
-		}
-	}
-
-	// Fills lps[] for given patttern pat[0..M-1]
-	void computeLPSArray(char *pat, int M, int *lps)
-	{
-		// length of the previous longest prefix suffix
-		int len = 0;
-
-		lps[0] = 0; // lps[0] is always 0
-
-					// the loop calculates lps[i] for i = 1 to M-1
-		int i = 1;
-		while (i < M)
-		{
-			if (pat[i] == pat[len])
-			{
-				len++;
-				lps[i] = len;
-				i++;
-			}
-			else // (pat[i] != pat[len])
-			{
-				// This is tricky. Consider the example.
-				// AAACAAAA and i = 7. The idea is similar 
-				// to search step.
-				if (len != 0)
-				{
-					len = lps[len - 1];
-
-					// Also, note that we do not increment
-					// i here
-				}
-				else // if (len == 0)
-				{
-					lps[i] = 0;
-					i++;
-				}
-			}
-		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

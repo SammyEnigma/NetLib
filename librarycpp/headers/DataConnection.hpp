@@ -1,21 +1,24 @@
 #ifndef _DATA_CONNECTION
 #define _DATA_CONNECTION
 
-#include "GenericString.hpp"
-#include "DateTime.hpp"
-#include "Variant.hpp"
+#include <string>
+#include <chrono>
+#include <variant>
 
-namespace CoreLibrary
+namespace CoreLib
 {
-	const int DB_SUCCESS = 0;
-	const int ERR_NULL_CONST_VIOLATION = 901;
-	const int ERR_UNIQ_CONST_VIOLATION = 902;
-	const int ERR_COLUMN_SIZE_VIOLATION = 903;
-	const int ERR_MISSING_COLUMN = 904;
-	const int ERR_INVALID_INT = 905;
-	const int ERR_INAVLID_SQL_STRING = 906;
-	const int ERR_NO_CONNECTION = 907;
-	const int ERR_UNKNOWN_DB_ERROR = 999;
+	typedef enum DataBaseResponse
+	{
+		DB_SUCCESS,
+		ERR_NULL_CONST_VIOLATION,
+		ERR_UNIQ_CONST_VIOLATION,
+		ERR_COLUMN_SIZE_VIOLATION,
+		ERR_MISSING_COLUMN,
+		ERR_INVALID_INT,
+		ERR_INAVLID_SQL_STRING,
+		ERR_NO_CONNECTION,
+		ERR_UNKNOWN_DB_ERROR
+	}DataBaseResponse;
 
 	typedef enum DataBaseType
 	{
@@ -27,7 +30,6 @@ namespace CoreLibrary
 	}DataBaseType;
 
 	const unsigned int numcolumns = 32;
-
 	const unsigned int charsize = sizeof(char);
 	const unsigned int strsize = 256 * sizeof(char);
 	const unsigned int datesize = 7 * sizeof(unsigned char);
@@ -89,7 +91,7 @@ namespace CoreLibrary
 		int getScale();
 		int getPrecision();
 
-		void setName(GenericString val);
+		void setName(std::string& val);
 		void setLength(long val);
 		void setPosition(long val);
 		void setType(VariantType val);
@@ -116,46 +118,48 @@ namespace CoreLibrary
 	public:
 		Database();
 		~Database();
-		GenericString getDatabaseTimeStamp(const GenericString &timestamp, const GenericString &format);
+		std::string getDatabaseTimeStamp(const std::string &timestamp, const std::string &format);
 
 		virtual bool initialize() = 0;
 		virtual bool deinitialize() = 0;
-		virtual bool createConnection(const GenericString &dbname, const GenericString &uname, const GenericString &passwd, const GenericString &host, const int &port, GenericString &errmsg, int &errorCode) = 0;
+		virtual bool createConnection(const std::string &dbname, const std::string &uname, const std::string &passwd, const std::string &host, const int &port, std::string &errmsg, int &errorCode) = 0;
+		virtual bool createConnection(const std::string& dbfilename, std::string& errmsg, int& errorCode) = 0;
 		virtual bool closeConnection() = 0;
 		virtual void enableAutoCommit() = 0;
-		virtual bool executeDML(const char *sqlstr, GenericString &errmsg, int &errorCode) = 0;
-		virtual bool executeSQL(const char *sqlstr, GenericString &errmsg, int &errorCode) = 0;
-		virtual Variant* getRow(bool &fetchpending, GenericString &errmsg, int &errorCode) = 0;
+		virtual bool executeDML(const char *sqlstr, std::string &errmsg, int &errorCode) = 0;
+		virtual bool executeSQL(const char *sqlstr, std::string &errmsg, int &errorCode) = 0;
+		virtual Variant* getRow(bool &fetchpending, std::string &errmsg, int &errorCode) = 0;
 		virtual bool startTransaction() = 0;
 		virtual bool commit() = 0;
 		virtual bool rollback() = 0;
-		virtual void getError(GenericString &str, int &errorCode) = 0;
+		virtual void getError(std::string &str, int &errorCode) = 0;
 		virtual DataBaseType getDatabaseType() = 0;
 		virtual int errorDBToAppType(int errorcode) = 0;
 		virtual bool reConnect() = 0;
 		virtual ConnectionHandle* getConnectionHandle() = 0;
 		virtual StatementHandle* getStatementHandle() = 0;
 		virtual VariantType translateToLocalType(unsigned int  _DbType) = 0;
-		virtual bool getColumns(GenericString &errmsg, int &errorCode) = 0;
+		virtual bool getColumns(std::string &errmsg, int &errorCode) = 0;
 		virtual bool isOpen() = 0;
-		virtual GenericString getNativeTimeStamp(DateTime &timestamp) = 0;
-		virtual bool setupDateFormat(GenericString errmsg, int &errorCode) = 0;
-		virtual void rowLimitClause(GenericString &str) = 0;
+		virtual std::string getNativeTimeStamp(DateTime &timestamp) = 0;
+		virtual bool setupDateFormat(std::string errmsg, int &errorCode) = 0;
+		virtual void rowLimitClause(std::string &str) = 0;
 		virtual void releaseReadBuffers() = 0;
-		virtual bool prepareBind(const char* sqlstring, GenericString &errmsg, int &errorCode) = 0;
+		virtual bool prepareBind(const char* sqlstring, std::string &errmsg, int &errorCode) = 0;
 		virtual bool bindColumn(BindStruct &bstruct) = 0;
 		virtual bool copyValue(Variant &val, int column, int row) = 0;
 		virtual void setBulkArraySize(long sz) = 0;
-		virtual bool executeBulkDML(GenericString &errmsg, int &errorCode) = 0;
+		virtual bool executeBulkDML(std::string &errmsg, int &errorCode) = 0;
 	protected:
 		DataBaseType _DbType;
 		bool _AutoCommitOn;
-		GenericString _DbName;
-		GenericString _Username;
-		GenericString _Password;
-		GenericString _Host;
+		std::string _DbName;
+		std::string _Username;
+		std::string _Password;
+		std::string _Host;
+		std::string _DbFileName;
 		int _Port;
-		GenericString _PortString;
+		std::string _PortString;
 		unsigned int _ArraySize;
 	};
 }

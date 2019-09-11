@@ -199,7 +199,7 @@ namespace CoreLib
 		memset(tempBuffer, 0, 1024);
 		if (_MessageType == Response)
 		{
-			sprintf(tempBuffer, "%s/%s %d %s\r\n", _Protocol.c_str(), _Version.c_str(), _ResponseCode, _ResponseText.c_str());
+			sprintf(tempBuffer, "%s/%s %ld %s\r\n", _Protocol.c_str(), _Version.c_str(), _ResponseCode, _ResponseText.c_str());
 		}
 		else
 		{

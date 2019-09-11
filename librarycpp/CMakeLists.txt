@@ -25,7 +25,7 @@ ${PROJECT_SOURCE_DIR}/ABNFMessage.cpp
 ${PROJECT_SOURCE_DIR}/Base64.cpp
 ${PROJECT_SOURCE_DIR}/Buffer.cpp
 ${PROJECT_SOURCE_DIR}/Configuration.cpp
-${PROJECT_SOURCE_DIR}/DataConnection.cpp
+#${PROJECT_SOURCE_DIR}/DataConnection.cpp
 ${PROJECT_SOURCE_DIR}/DateTime.cpp
 ${PROJECT_SOURCE_DIR}/String.cpp
 ${PROJECT_SOURCE_DIR}/Logger.cpp
@@ -44,7 +44,7 @@ ${PROJECT_HEADER_DIR}/Base64.hpp
 ${PROJECT_HEADER_DIR}/BinaryTree.hpp
 ${PROJECT_HEADER_DIR}/Buffer.hpp
 ${PROJECT_HEADER_DIR}/Configuration.hpp
-${PROJECT_HEADER_DIR}/DataConnection.hpp
+#${PROJECT_HEADER_DIR}/DataConnection.hpp
 ${PROJECT_HEADER_DIR}/DateTime.hpp
 ${PROJECT_HEADER_DIR}/String.hpp
 ${PROJECT_HEADER_DIR}/KeyValue.hpp

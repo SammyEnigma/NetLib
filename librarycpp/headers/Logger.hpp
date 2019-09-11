@@ -5,8 +5,6 @@
 #include <string>
 #include <fstream>
 
-using namespace std;
-
 #if defined(_WIN32) || defined(WIN32)
 #define __FUNCTIONNAME__ __FUNCTION__
 #else
@@ -31,19 +29,16 @@ public:
     void    StartLogging();
     void    StopLogging();
     void    Write(std::string logEntry, LogLevel llevel, const char* func, const char* file, int line);
-    void    WriteExtended(LogLevel llevel, const char* func, const char* file, int line, const char* format,...);
     void    SetLogFileSize(int flsz);
-    void    SetLogDirectory(std::string &dirpath);
-    void    SetModuleName(const char* mname);
+    void    SetLogDirectory(const std::string &dirpath);
+    void    SetModuleName(const std::string& mname);
     static Logger*  GetInstance();
 private:
-    void CreateBackupFileName(std::string &str);
 	std::string logFilename;
 	std::string  logDirectory;
-	std::string  logBackupDirectory;
-    int     logFileSize;
 	std::string  moduleName;
-    ofstream   logFile;
+    size_t     logFileSize;
+    std::ofstream   logFile;
     std::map<LogLevel, std::string> logLevelMap;
 };
 

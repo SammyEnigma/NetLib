@@ -1,24 +1,23 @@
 #ifndef _PROCESS_LOCK
 #define _PROCESS_LOCK
 
-#include "GenericString.hpp"
-#include "List.hpp"
+#include <string>
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	class ProcessLock
 	{
 	public:
 		ProcessLock();
 		virtual ~ProcessLock();
-		bool lockProcess(GenericString &lockfileame);
-		void getLockFileName(GenericString &lockfileame);
-		void getUserName(GenericString &uName);
+		bool lockProcess(std::string &lockfileame);
+		void getLockFileName(std::string &lockfileame);
+		void getUserName(std::string &uName);
 	private:
-		void getProcessName(GenericString &processName);
-		void getTempDir(GenericString &dirName);
+		void getProcessName(std::string &processName);
+		void getTempDir(std::string &dirName);
 		int _LockFile;
-		GenericString _LockFileName;
+		std::string _LockFileName;
 	};
 }
 #endif

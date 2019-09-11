@@ -254,18 +254,26 @@ namespace CoreLib
 		}
 		case Number:
 		{
-			str += getSignedNumber();
+			int num;
+			memcmp(&num, &_RawBuffer, _DataSize);
+			sprintf(ptr, "%d", num);
+			str = ptr;
 			break;
 		}
 		case UnsignedNumber:
 		{
-			// Check !
-			str += getSignedNumber();
+			unsigned int num;
+			memcmp(&num, &_RawBuffer, _DataSize);
+			sprintf(ptr, "%u", num);
+			str = ptr;
 			break;
 		}
 		case Decimal:
 		{
-			str += getReal();
+			double num;
+			memcmp(&num, &_RawBuffer, _DataSize);
+			sprintf(ptr, "%f", num);
+			str = ptr;
 			break;
 		}
 		case DateTimeStamp:
