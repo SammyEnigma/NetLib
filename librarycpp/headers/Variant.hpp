@@ -1,26 +1,13 @@
 #ifndef _VARIANT
 #define _VARIANT
 
-#include "Buffer.hpp"
-#include "DateTime.hpp"
+#include "VariantType.hpp"
 #include <string>
+#include <ctime>
+#include <chrono>
 
 namespace CoreLib
 {
-	typedef enum VariantType
-	{
-		Void = 0,
-		Char = 1,
-		UnsignedChar = 2,
-		String = 3,
-		Boolean = 4,
-		Number = 5,
-		UnsignedNumber = 6,
-		Decimal = 7,
-		DateTimeStamp = 8,
-		Raw = 9
-	}VariantType;
-
 	class Variant
 	{
 	public:
@@ -30,12 +17,12 @@ namespace CoreLib
 		Variant(const char val);
 		Variant(const unsigned char val);
 		Variant(const std::string &val);
-		Variant(const Buffer &val);
+		Variant(const char*  val, size_t len);
 		Variant(const bool val);
 		Variant(const long val);
 		Variant(const unsigned long val);
 		Variant(const double val);
-		Variant(const DateTime &val);
+		Variant(const std::chrono::system_clock::time_point& val);
 
 		const void* getData();
 		void getString(std::string &str);
@@ -43,7 +30,7 @@ namespace CoreLib
 		unsigned long getUnsignedNumber();
 		double getReal();
 		bool getBoolean();
-		DateTime getTimestamp();
+		std::chrono::system_clock::time_point getTimestamp();
 		char getSignedChar();
 
 		VariantType getType();
@@ -53,16 +40,17 @@ namespace CoreLib
 		void setData(const char val);
 		void setData(const unsigned char val);
 		void setData(const std::string &val);
-		void setData(const Buffer &val);
+		void setData(const char* val, size_t len);
 		void setData(const bool val);
 		void setData(const long val);
 		void setData(const unsigned long val);
 		void setData(const double val);
-		void setData(const DateTime &val);
+		void setData(const std::chrono::system_clock::time_point& val);
 
+	private:
 		VariantType _DataType;
 		unsigned char _RawBuffer[256];
-		unsigned int _DataSize;
+		size_t _DataSize;
 	};
 }
 #endif

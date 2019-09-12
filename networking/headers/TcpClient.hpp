@@ -1,9 +1,39 @@
 #ifndef	_TCP_CLIENT
 #define	_TCP_CLIENT
 
+#if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
+#define WIN32_LEAN_AND_MEAN
+#include <WinSock2.h>
+#include <Windows.h>
+#include <WS2tcpip.h>
+#endif
+
+#if defined(__gnu_linux__) || defined (__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#include <unistd.h>
+#include <pthread.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/select.h>
+#include <fcntl.h>
+#endif
+
+#include <openssl/bio.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#include <openssl/x509.h>
+#include <openssl/x509_vfy.h>
+
 #include <string>
-#include "Network.h"
-#include "../../utils/StringEx.h"
+#include "Network.hpp"
+#include "StringEx.hpp"
 
 using namespace std;
 

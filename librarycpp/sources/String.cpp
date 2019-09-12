@@ -415,23 +415,6 @@ namespace CoreLib
 		return _Buffer[index];
 	}
 
-	unsigned char * String::fromBase64()
-	{
-		Base64 b64;
-
-		unsigned char* decodedbuffer = nullptr;
-		unsigned long decodedbufferlen = 0;
-
-		b64.decodeBase64((const char*)_Buffer, _StringLen, decodedbuffer, decodedbufferlen);
-
-		return decodedbuffer;
-	}
-
-	char* String::toBase64()
-	{
-		return nullptr;
-	}
-
 	wchar_t* String::toWideCharacter()
 	{
 		return nullptr;

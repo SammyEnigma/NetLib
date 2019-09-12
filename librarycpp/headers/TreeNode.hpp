@@ -1,7 +1,7 @@
 #ifndef _TREE_NODE
 #define _TREE_NODE
 
-namespace CoreLibrary
+namespace CoreLib
 {
 	template <class V>
 	class TreeNode

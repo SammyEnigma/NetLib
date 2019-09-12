@@ -54,8 +54,6 @@ namespace CoreLib
 		void SetAt(const int atpos, const char ch);
 		char operator[](const long index);
 
-		char* toBase64();
-
 	private:
 		char*	_Buffer;
 		int		_BufferLen;

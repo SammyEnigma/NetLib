@@ -105,10 +105,10 @@ namespace CoreLib
 	}
 
 
-	void Column::setName(GenericString val)
+	void Column::setName(std::string &val)
 	{
 		memset((void*)&_ColumnName[0], 0, 64);
-		memcpy((void*)&_ColumnName[0], val.buffer(), 63);
+		memcpy((void*)&_ColumnName[0], val.c_str(), 63);
 	}
 
 	void Column::setLength(long val)
@@ -177,10 +177,11 @@ namespace CoreLib
 	{
 	}
 
-	GenericString Database::getDatabaseTimeStamp(const GenericString &timestamp, const GenericString &format)
+	std::string Database::getDatabaseTimeStamp(const std::string &timestamp, const std::string &format)
 	{
-		DateTime tsval;
-		tsval.buildFromString(timestamp, format);
-		return getNativeTimeStamp(tsval);
+		return "";
+		//DateTime tsval;
+		//tsval.buildFromString(timestamp, format);
+		//return getNativeTimeStamp(tsval);
 	}
 }

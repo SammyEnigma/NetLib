@@ -10,12 +10,12 @@ namespace CoreLib
 	public:
 		ProcessLock();
 		virtual ~ProcessLock();
-		bool lockProcess(std::string &lockfileame);
-		void getLockFileName(std::string &lockfileame);
-		void getUserName(std::string &uName);
+		bool LockProcess(std::string &lockfileame);
+		void GetLockFileName(std::string &lockfileame);
+		void GetCurrentUserName(std::string &uName);
 	private:
-		void getProcessName(std::string &processName);
-		void getTempDir(std::string &dirName);
+		void GetProcessName(std::string &processName);
+		void GetTempDir(std::string &dirName);
 		int _LockFile;
 		std::string _LockFileName;
 	};

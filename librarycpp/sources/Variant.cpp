@@ -53,18 +53,17 @@ namespace CoreLib
 		_DataSize = sz;
 	}
 
-	Variant::Variant(const Buffer &val)
+	Variant::Variant(const char* val, size_t len)
 	{
-		int sz = val.length();
+		_DataSize = len;
 
-		if (sz > 255)
+		if (_DataSize > 255)
 		{
-			sz = 255;
+			_DataSize = 255;
 		}
 		_DataType = Raw;
 		memset((void*)&_RawBuffer[0], 0, 256);
-		memcpy(_RawBuffer, val.buffer(), sz);
-		_DataSize = sz;
+		memcpy(_RawBuffer, val, _DataSize);
 	}
 
 	Variant::Variant(const bool val)
@@ -99,10 +98,9 @@ namespace CoreLib
 		_DataSize = sizeof(double);
 	}
 
-	Variant::Variant(const DateTime &val)
+	Variant::Variant(const std::chrono::system_clock::time_point& val)
 	{
-		DateTime temp = val;
-		time_t t = temp.getTime();
+		time_t t = std::chrono::system_clock::to_time_t(val);
 		_DataType = DateTimeStamp;
 		_DataSize = sizeof(time_t);
 		memset((void*)&_RawBuffer[0], 0, 256);
@@ -160,18 +158,17 @@ namespace CoreLib
 		_DataSize = sz;
 	}
 
-	void Variant::setData(const Buffer &val)
+	void Variant::setData(const char* val, size_t len)
 	{
-		int sz = val.length();
+		_DataSize = len;
 
-		if (sz > 255)
+		if (_DataSize > 255)
 		{
-			sz = 255;
+			_DataSize = 255;
 		}
 		_DataType = Raw;
 		memset((void*)&_RawBuffer[0], 0, 256);
-		memcpy(_RawBuffer, val.buffer(), sz);
-		_DataSize = sz;
+		memcpy(_RawBuffer, val, _DataSize);
 	}
 
 	void Variant::setData(const bool val)
@@ -206,10 +203,9 @@ namespace CoreLib
 		_DataSize = sizeof(double);
 	}
 
-	void Variant::setData(const DateTime &val)
+	void Variant::setData(const std::chrono::system_clock::time_point& val)
 	{
-		DateTime temp = val;
-		time_t t = temp.getTime();
+		time_t t = std::chrono::system_clock::to_time_t(val);
 		_DataType = DateTimeStamp;
 		_DataSize = sizeof(time_t);
 		memset((void*)&_RawBuffer[0], 0, 256);
@@ -278,8 +274,8 @@ namespace CoreLib
 		}
 		case DateTimeStamp:
 		{
-			DateTime dt = getTimestamp();
-			str = dt.getDateString("yyyy/MM/dd hh:mm:ss");
+			//DateTime dt = getTimestamp();
+			//str = dt.getDateString("yyyy/MM/dd hh:mm:ss");
 			break;
 		}
 		case Raw:
@@ -348,18 +344,18 @@ namespace CoreLib
 	}
 
 
-	DateTime Variant::getTimestamp()
+	std::chrono::system_clock::time_point Variant::getTimestamp()
 	{
-		if (_DataType != DateTimeStamp)
-		{
-			DateTime ts;
-			return ts;
-		}
+		std::chrono::system_clock::time_point ts;
+		//if (_DataType != DateTimeStamp)
+		//{
+		//	return ts;
+		//}
 
-		long long temp;
-		memcpy((void*)&temp, (void*)&_RawBuffer[0], sizeof(long long));
+		//long long temp;
+		//memcpy((void*)&temp, (void*)&_RawBuffer[0], sizeof(long long));
 
-		DateTime ts(temp);
+		//DateTime ts(temp);
 		return ts;
 	}
 

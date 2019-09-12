@@ -4,9 +4,13 @@
 #include <string>
 #include <chrono>
 #include <variant>
+#include <vector>
+#include "VariantType.hpp"
 
 namespace CoreLib
 {
+	typedef std::variant<void*, char, unsigned char, std::string, bool, long, unsigned long, double, std::chrono::system_clock::time_point, unsigned char*> SQLData;
+
 	typedef enum DataBaseResponse
 	{
 		DB_SUCCESS,
@@ -26,8 +30,10 @@ namespace CoreLib
 		PostgreSQL = 1,
 		MySql = 2,
 		SQLServer = 3,
-		DB2 = 4
+		SQLite = 4
 	}DataBaseType;
+
+
 
 	const unsigned int numcolumns = 32;
 	const unsigned int charsize = sizeof(char);
@@ -128,7 +134,7 @@ namespace CoreLib
 		virtual void enableAutoCommit() = 0;
 		virtual bool executeDML(const char *sqlstr, std::string &errmsg, int &errorCode) = 0;
 		virtual bool executeSQL(const char *sqlstr, std::string &errmsg, int &errorCode) = 0;
-		virtual Variant* getRow(bool &fetchpending, std::string &errmsg, int &errorCode) = 0;
+		virtual std::vector<SQLData> getRow(bool &fetchpending, std::string &errmsg, int &errorCode) = 0;
 		virtual bool startTransaction() = 0;
 		virtual bool commit() = 0;
 		virtual bool rollback() = 0;
@@ -141,13 +147,13 @@ namespace CoreLib
 		virtual VariantType translateToLocalType(unsigned int  _DbType) = 0;
 		virtual bool getColumns(std::string &errmsg, int &errorCode) = 0;
 		virtual bool isOpen() = 0;
-		virtual std::string getNativeTimeStamp(DateTime &timestamp) = 0;
+		virtual std::string getNativeTimeStamp(std::chrono::system_clock::time_point& timestamp) = 0;
 		virtual bool setupDateFormat(std::string errmsg, int &errorCode) = 0;
 		virtual void rowLimitClause(std::string &str) = 0;
 		virtual void releaseReadBuffers() = 0;
 		virtual bool prepareBind(const char* sqlstring, std::string &errmsg, int &errorCode) = 0;
 		virtual bool bindColumn(BindStruct &bstruct) = 0;
-		virtual bool copyValue(Variant &val, int column, int row) = 0;
+		virtual bool copyValue(SQLData &val, int column, int row) = 0;
 		virtual void setBulkArraySize(long sz) = 0;
 		virtual bool executeBulkDML(std::string &errmsg, int &errorCode) = 0;
 	protected:
@@ -160,7 +166,7 @@ namespace CoreLib
 		std::string _DbFileName;
 		int _Port;
 		std::string _PortString;
-		unsigned int _ArraySize;
+		size_t _ArraySize;
 	};
 }
 #endif

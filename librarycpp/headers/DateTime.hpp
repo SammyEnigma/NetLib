@@ -27,31 +27,31 @@ namespace CoreLib
 		DateTime& operator-=(const DateTime& other);
 		DateTime operator-(const DateTime& other);
 
-		void buildFromString(const std::string &str, const std::string &format);
-		void buildFromTime(const time_t &tinfo);
+		void BuildFromString(const std::string &str, const std::string &format);
+		void BuildFromTime(const time_t &tinfo);
 
-		std::string getDateString(const std::string& format);
-		std::string getDateString();
-		time_t getTime();
+		std::string GetDateString(const std::string& format);
+		std::string GetDateString();
+		time_t GetTime();
 
-		void addDays(int val);
-		void addHours(int val);
-		void addMinutes(int val);
-		void addSeconds(int val);
+		void AddDays(int val);
+		void AddHours(int val);
+		void AddMinutes(int val);
+		void AddSeconds(int val);
 
-		int getDays();
-		int getMonths();
-		int getYears();
-		int getHours();
-		int getMinutes();
-		int getSeconds();
+		int GetDays();
+		int GetMonths();
+		int GetYears();
+		int GetHours();
+		int GetMinutes();
+		int GetSeconds();
 
-		void setDay(int val);
-		void setMonth(int val);
-		void setYear(int val);
-		void setHour(int val);
-		void setMinute(int val);
-		void setSecond(int val);
+		void SetDay(int val);
+		void SetMonth(int val);
+		void SetYear(int val);
+		void SetHour(int val);
+		void SetMinute(int val);
+		void SsetSecond(int val);
 
 	private:
 		struct tm timeinfo;;

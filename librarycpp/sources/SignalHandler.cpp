@@ -55,12 +55,12 @@ namespace CoreLib
 	{
 	}
 
-	void SignalHandler::registerCallbackClient(SignalCallback *clientptr)
+	void SignalHandler::RegisterCallbackClient(SignalCallback *clientptr)
 	{
 		callback = clientptr;
 	}
 
-	void SignalHandler::registerSignalHandlers()
+	void SignalHandler::RegisterSignalHandlers()
 	{
 		#if defined(WIN32) || defined (_WIN32) || defined (_WIN64) || defined (WIN64)
 		if (signal(SIGINT, shutdownCallback) == SIG_ERR)
@@ -167,7 +167,7 @@ namespace CoreLib
 	#endif
 	}
 
-	bool SignalHandler::isShutdownSignal(const int signum)
+	bool SignalHandler::IsShutdownSignal(const int signum)
 	{
 		return isShutdownSignalImpl(signum);
 	}
@@ -206,7 +206,7 @@ namespace CoreLib
 	{
 		if (callback && signo != SIGSEGV)
 		{
-			callback->shutdown();
+			callback->Shutdown();
 		}
 	}
 	#else
@@ -215,7 +215,7 @@ namespace CoreLib
 	{
 		if (callback)
 		{
-			callback->suspend();
+			callback->Suspend();
 		}
 	}
 
@@ -223,7 +223,7 @@ namespace CoreLib
 	{
 		if (callback)
 		{
-			callback->resume();
+			callback->Resume();
 		}
 	}
 
@@ -236,7 +236,7 @@ namespace CoreLib
 
 		if (callback)
 		{
-			callback->shutdown();
+			callback->Shutdown();
 		}
 	}
 
@@ -253,7 +253,7 @@ namespace CoreLib
 	{
 		if (callback)
 		{
-			callback->alarm();
+			callback->Alarm();
 		}
 	}
 
@@ -261,7 +261,7 @@ namespace CoreLib
 	{
 		if (callback)
 		{
-			callback->reset();
+			callback->Reset();
 		}
 	}
 
@@ -273,7 +273,7 @@ namespace CoreLib
 
 		if (callback)
 		{
-			callback->childExit();
+			callback->ChildExit();
 		}
 	}
 
@@ -281,7 +281,7 @@ namespace CoreLib
 	{
 		if (callback)
 		{
-			callback->userdefined1();
+			callback->Userdefined1();
 		}
 	}
 
@@ -289,7 +289,7 @@ namespace CoreLib
 	{
 		if (callback)
 		{
-			callback->userdefined2();
+			callback->Userdefined2();
 		}
 	}
 	#endif

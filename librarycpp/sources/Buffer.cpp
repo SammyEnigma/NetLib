@@ -223,18 +223,6 @@ namespace CoreLib
 		return _Buffer[index];
 	}
 
-	char * Buffer::toBase64()
-	{
-		Base64 b64;
-
-		char* encodedbuffer = nullptr;
-		unsigned long encodedbufferlen = 0;
-
-		b64.encodeBase64((const unsigned char*)_Buffer, _DataLen, encodedbuffer, encodedbufferlen);
-
-		return encodedbuffer;
-	}
-
 	void Buffer::clear()
 	{
 		if (_Buffer != nullptr)

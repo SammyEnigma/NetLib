@@ -1,6 +1,6 @@
 #include <memory.h>
-#include "../../utils/StringEx.h"
-#include "ImapClient.h"
+#include "StringEx.hpp"
+#include "ImapClient.hpp"
 
 unsigned long getNumber(const std::string& str);
 

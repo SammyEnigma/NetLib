@@ -1,10 +1,19 @@
-#include "Mail.h"
+#include "Mail.hpp"
+#include "StringEx.hpp"
+#include "Base64.hpp"
+
 #include <string.h>
 #include <memory.h>
-#include "../utils/StringEx.h"
-#include "../utils/Base64.h"
-#include "../utils/Directory.h"
-#include "../utils/DateTime.h"
+#include <chrono>
+#include <fstream>
+
+#if defined (_FILESYSTEM_)
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#endif
 
 void translateMonthToNumber(std::string& str);
 
@@ -88,7 +97,6 @@ void MailBody::Serialize(std::string &str)
     {
         if (node.NodeType == Html || node.NodeType == PlainText)
         {
-
             memset(linebuffer, 0, 1024);
             sprintf(linebuffer, "--%s\n", mime_boundary.c_str());
             str += linebuffer;
@@ -117,39 +125,31 @@ void MailBody::Serialize(std::string &str)
         {
             std::string fname = node.NodeName;
 
-            if (!dirfileexists(fname))
+            if (!fs::exists(fname))
             {
                 continue;
             }
+			
+			size_t fileSize = fs::file_size(fname);
 
-            FILE* attachmentfile = fopen(fname.c_str(), "rb");
+			std::ifstream attachmentFile(fname, std::ios::binary);
+			std::vector<char> fileContents;
+			fileContents.reserve(fileSize);
+			fileContents.assign(std::istreambuf_iterator<char>(attachmentFile), std::istreambuf_iterator<char>());
 
-            if (attachmentfile == NULL)
-            {
-                continue;
-            }
-
-            fseek(attachmentfile, 0, SEEK_END);
-            size_t contentlength = ftell(attachmentfile);
-            rewind(attachmentfile);
-
-            unsigned char* attData = (unsigned char*)calloc(1, contentlength);
-            fread(attData, contentlength, 1, attachmentfile);
-            fclose(attachmentfile);
+			std::vector<unsigned char> temp_filecontents;
+			unsigned char* ptr = reinterpret_cast<unsigned char*>(fileContents.data());
+			temp_filecontents.insert(temp_filecontents.begin(), ptr, ptr + fileContents.size());
 
             std::string b64content;
-            class Base64 b64;
-            unsigned long olen;
-            b64.EncodeBase64(attData, contentlength, olen, b64content);
-            free(attData);
+            CoreLib::Base64 b64;
+			b64content = b64.Encode(temp_filecontents);
+
+			std::string complete_base_name = fs::path(fname).filename().generic_string();
 
             memset(linebuffer, 0, 1024);
             sprintf(linebuffer, "--%s\n", mime_boundary.c_str());
             str += linebuffer;
-
-			std::string complete_base_name;
-
-			dirgetname(fname, complete_base_name);
 
             memset(linebuffer, 0, 1024);
             sprintf(linebuffer, "Content-Type:application/octet-stream;name=\"%s\"\n", complete_base_name.c_str());
@@ -201,37 +201,16 @@ std::vector<MimeNode> MailBody::GetDataNodes()
     return mailData;
 }
 
-string MailBody::EncodeBase64(std::string str)
+string MailBody::EncodeBase64(std::vector<unsigned char>& data)
 {
-	std::string ret;
-	class Base64 b64;
-	unsigned long outlen;
-
-	b64.EncodeBase64((const unsigned char*)str.c_str(), str.length(), outlen, ret);
-
-	return ret;
+	CoreLib::Base64 b64;
+	return b64.Encode(data);
 }
 
-string MailBody::EncodeBase64(const char* buffer, unsigned long len)
+std::vector<unsigned char> MailBody::DecodeBase64(string &str)
 {
-	std::string ret;
-	class Base64 b64;
-	unsigned long outlen;
-
-	b64.EncodeBase64((const unsigned char*)buffer, len, outlen, ret);
-
-	return ret;
-}
-
-std::string MailBody::DecodeBase64(string str)
-{
-	std::string ret;
-	class Base64 b64;
-	unsigned long outlen;
-
-	ret = (const char*)b64.DecodeBase64(str.c_str(), str.length(), outlen);
-
-	return ret;
+	CoreLib::Base64 b64;
+	return b64.Decocde(str);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -365,7 +344,6 @@ void MailHeader::SetTimeStamp(string dt)
     headers["Date"] = dt;
 }
 
-
 std::vector<string> MailHeader::GetToList()
 {
 	std::vector<std::string> ret;
@@ -443,7 +421,7 @@ void MailHeader::GenerateMessageId()
     strtimestamp(temp);
     temp += GetFrom();
 
-    class Base64 b64;
+	CoreLib::Base64 b64;
     unsigned long olen;
     b64.EncodeBase64((const unsigned char*)temp.c_str(), temp.length(), olen, messageId);
 
@@ -482,7 +460,6 @@ void  MailHeader::AddHeader(const std::string& key, const std::string& value)
 	headers[key] = value;
 }
 
-
 std::vector<std::string> MailHeader::GetHeaders()
 {
     vector<std::string> keys;
@@ -505,37 +482,16 @@ void MailHeader::DeSerialize()
 
 }
 
-string MailHeader::EncodeBase64(std::string str)
+string MailHeader::EncodeBase64(std::vector<unsigned char>& data)
 {
-	std::string ret;
-	class Base64 b64;
-	unsigned long outlen;
-
-	b64.EncodeBase64((const unsigned char*)str.c_str(), str.length(), outlen, ret);
-
-	return ret;
+	CoreLib::Base64 b64;
+	return b64.Encode(data);
 }
 
-string MailHeader::EncodeBase64(const char* buffer, unsigned long len)
+std::vector<unsigned char> MailHeader::DecodeBase64(string& str)
 {
-	std::string ret;
-	class Base64 b64;
-	unsigned long outlen;
-
-	b64.EncodeBase64((const unsigned char*)buffer, len, outlen, ret);
-
-	return ret;
-}
-
-string MailHeader::DecodeBase64(std::string str)
-{
-	std::string ret;
-	class Base64 b64;
-	unsigned long outlen;
-
-	ret = (const char*)b64.DecodeBase64(str.c_str(), str.length(), outlen);
-
-	return ret;
+	CoreLib::Base64 b64;
+	return b64.Decocde(str);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -619,41 +575,36 @@ void Mail::Serialize()
 
         if(node.NodeType == Attachment || node.NodeType == InlineImage)
         {
-            std::string fname = node.NodeName;
+			std::string fname = node.NodeName;
 
-            if (!dirfileexists(fname))
-            {
-                continue;
-            }
+			if (!fs::exists(fname))
+			{
+				continue;
+			}
 
+			size_t fileSize = fs::file_size(fname);
 
-            FILE* attachmentfile = fopen(fname.c_str(), "rb");
+			std::ifstream attachmentFile(fname, std::ios::binary);
+			std::vector<char> fileContents;
+			fileContents.reserve(fileSize);
+			fileContents.assign(std::istreambuf_iterator<char>(attachmentFile), std::istreambuf_iterator<char>());
 
-            if (attachmentfile == NULL)
-            {
-                continue;
-            }
+			std::vector<unsigned char> temp_filecontents;
+			unsigned char* ptr = reinterpret_cast<unsigned char*>(fileContents.data());
+			temp_filecontents.insert(temp_filecontents.begin(), ptr, ptr + fileContents.size());
 
-            fseek(attachmentfile, 0, SEEK_END);
-            size_t contentlength = ftell(attachmentfile);
-            rewind(attachmentfile);
+			std::string b64content;
+			CoreLib::Base64 b64;
+			b64content = b64.Encode(temp_filecontents);
 
-            unsigned char* attData = (unsigned char*)calloc(1, contentlength);
-            fread(attData, contentlength, 1, attachmentfile);
-            fclose(attachmentfile);
-
-            std::string b64content;
-            class Base64 b64;
-            unsigned long olen;
-            b64.EncodeBase64(attData, contentlength, olen, b64content);
-            free(attData);
+			std::string complete_base_name = fs::path(fname).filename().generic_string();
 
             memset(linebuffer, 0, 1024);
             sprintf(linebuffer, "--%s\n", mime_boundary.c_str());
 			SerializedData += linebuffer;
 
             memset(linebuffer, 0, 1024);
-            sprintf(linebuffer, "Content-Type:application/octet-stream;name=\"%s\"\n", fname.c_str());
+            sprintf(linebuffer, "Content-Type:application/octet-stream;name=\"%s\"\n", complete_base_name.c_str());
 			SerializedData += linebuffer;
 
             memset(linebuffer, 0, 1024);
@@ -887,7 +838,7 @@ void Mail::ParseNode(std::string& substring, MimeNode& node)
 
 		if (strcontains(temp.c_str(), "content-transfer-encoding") && strcontains(temp.c_str(), "base64"))
 		{
-			node.TextEncoding = Base64;
+			node.TextEncoding = Base64String;
 			continue;
 		}
 
@@ -960,7 +911,7 @@ void Mail::ParseNode(std::string& substring, MimeNode& node)
 
 		if (node.NodeType != UnKnownType && node.TextEncoding != UnKnownEncoding)
 		{
-			if (node.TextEncoding == Base64 && str.length() < 1)
+			if (node.TextEncoding == Base64String && str.length() < 1)
 			{
 				//Skip blank lines for Base64 data
 				continue;
@@ -969,74 +920,6 @@ void Mail::ParseNode(std::string& substring, MimeNode& node)
 			node.Data += "\n";
 		}
 	}
-}
-
-///////////////////////////////////////////////////////////////////////////
-
-MailStorageInformation::MailStorageInformation()
-{
-
-}
-
-MailStorageInformation::~MailStorageInformation()
-{
-
-}
-
-MailStorageInformation::MailStorageInformation(const MailStorageInformation& other)
-{
-    directory = other.directory;
-    status = other.status;
-    account = other.account;
-    UID = other.UID;
-}
-
-void MailStorageInformation::operator=(const MailStorageInformation& other)
-{
-    directory = other.directory;
-    status = other.status;
-    account = other.account;
-    UID = other.UID;
-}
-
-void MailStorageInformation::SetDirectory(string dir)
-{
-    directory = dir;
-}
-
-void MailStorageInformation::SetStatus(string st)
-{
-    status = st;
-}
-
-void MailStorageInformation::SetAccount(std::string ac)
-{
-    account = ac;
-}
-
-void MailStorageInformation::SetUid(std::string uid)
-{
-   UID = uid;
-}
-
-std::string MailStorageInformation::GetDirectory()
-{
-    return directory;
-}
-
-string MailStorageInformation::GetStatus()
-{
-    return status;
-}
-
-std::string MailStorageInformation::GetAccount()
-{
-    return account;
-}
-
-std::string MailStorageInformation::GetUid()
-{
-    return UID;
 }
 
 ///////////////////////////////////////////////////////////////////////////

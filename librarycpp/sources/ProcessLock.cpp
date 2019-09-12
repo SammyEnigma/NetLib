@@ -24,9 +24,9 @@ namespace CoreLib
 		_LockFile = 0;
 	}
 
-	bool ProcessLock::lockProcess(std::string &lockfileame)
+	bool ProcessLock::LockProcess(std::string &lockfileame)
 	{
-		getLockFileName(_LockFileName);
+		GetLockFileName(_LockFileName);
 		if (_LockFile != 0 && _LockFile != -1)
 		{
 			//File is already open
@@ -66,12 +66,12 @@ namespace CoreLib
 		return true;
 	}
 
-	void ProcessLock::getLockFileName(std::string &lockfileame)
+	void ProcessLock::GetLockFileName(std::string &lockfileame)
 	{
 		std::string procname, uname, tmpdir;
-		getProcessName(procname);
-		getUserName(uname);
-		getTempDir(tmpdir);
+		GetProcessName(procname);
+		GetCurrentUserName(uname);
+		GetTempDir(tmpdir);
 
 		lockfileame = tmpdir;
 
@@ -90,7 +90,7 @@ namespace CoreLib
 	}
 
 	#if defined(_WIN32) || defined(WIN32)
-	void ProcessLock::getProcessName(std::string &processName)
+	void ProcessLock::GetProcessName(std::string &processName)
 	{
 		int ownpid = getpid();
 
@@ -114,7 +114,7 @@ namespace CoreLib
 		}
 	}
 
-	void ProcessLock::getUserName(std::string &uName)
+	void ProcessLock::GetCurrentUserName(std::string &uName)
 	{
 		char buffer[256] = { 0 };
 		unsigned long sz = 255;
@@ -122,7 +122,7 @@ namespace CoreLib
 		uName = buffer;
 	}
 
-	void ProcessLock::getTempDir(std::string &dirName)
+	void ProcessLock::GetTempDir(std::string &dirName)
 	{
 		dirName = getenv("TEMP");
 
@@ -137,7 +137,7 @@ namespace CoreLib
 
 	# else
 
-	void ProcessLock::getProcessName(std::string &processName)
+	void ProcessLock::GetProcessName(std::string &processName)
 	{
 		FILE *pipein_fp;
 		char readbuf[80] = { 0 };
@@ -206,12 +206,12 @@ namespace CoreLib
 		pclose(pipein_fp);
 	}
 
-	void ProcessLock::getUserName(std::string &uName)
+	void ProcessLock::GetCurrentUserName(std::string &uName)
 	{
 		uName = getenv("USER");
 	}
 
-	void ProcessLock::getTempDir(std::string &dirName)
+	void ProcessLock::GetTempDir(std::string &dirName)
 	{
 		dirName = "/tmp";
 	}

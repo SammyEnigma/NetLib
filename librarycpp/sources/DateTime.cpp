@@ -82,12 +82,12 @@ namespace CoreLib
 		}
 	}
 
-	void DateTime::buildFromTime(const time_t& tinfo)
+	void DateTime::BuildFromTime(const time_t& tinfo)
 	{
 		timeinfo = *localtime(&tinfo);
 	}
 
-	void DateTime::buildFromString(const std::string &str, const std::string &format)
+	void DateTime::BuildFromString(const std::string &str, const std::string &format)
 	{
 		time_t rawtime;
 		time(&rawtime);
@@ -273,13 +273,13 @@ namespace CoreLib
 		return DateTime(t3);
 	}
 
-	time_t DateTime::getTime()
+	time_t DateTime::GetTime()
 	{
 		time_t t = mktime(&timeinfo);
 		return t;
 	}
 
-	std::string DateTime::getDateString(const std::string& format)
+	std::string DateTime::GetDateString(const std::string& format)
 	{
 		std::string str = format;
 		size_t pos = 0;
@@ -365,7 +365,7 @@ namespace CoreLib
 		return buffer;
 	}
 
-	std::string DateTime::getDateString()
+	std::string DateTime::GetDateString()
 	{
 		std::string str = "yyyy/MM/dd hh:mm:ss";
 		size_t pos = 0;
@@ -452,22 +452,22 @@ namespace CoreLib
 	}
 
 
-	void DateTime::addDays(int val)
+	void DateTime::AddDays(int val)
 	{
-		addSeconds(val * 60 * 60 * 24);
+		AddSeconds(val * 60 * 60 * 24);
 	}
 
-	void DateTime::addHours(int val)
+	void DateTime::AddHours(int val)
 	{
-		addSeconds(val * 60 * 60);
+		AddSeconds(val * 60 * 60);
 	}
 
-	void DateTime::addMinutes(int val)
+	void DateTime::AddMinutes(int val)
 	{
-		addSeconds(val * 60);
+		AddSeconds(val * 60);
 	}
 
-	void DateTime::addSeconds(int val)
+	void DateTime::AddSeconds(int val)
 	{
 		// Commented due to GCC non POSIX behaviour
 		//time_t t = mktime(&timeinfo);
@@ -479,62 +479,62 @@ namespace CoreLib
 		timeinfo = *localtime(&t);
 	}
 
-	int DateTime::getDays()
+	int DateTime::GetDays()
 	{
 		return timeinfo.tm_mday;
 	}
 
-	int DateTime::getMonths()
+	int DateTime::GetMonths()
 	{
 		return timeinfo.tm_mon + 1;
 	}
 
-	int DateTime::getYears()
+	int DateTime::GetYears()
 	{
 		return timeinfo.tm_year + 1900;
 	}
 
-	int DateTime::getHours()
+	int DateTime::GetHours()
 	{
 		return timeinfo.tm_hour;
 	}
 
-	int DateTime::getMinutes()
+	int DateTime::GetMinutes()
 	{
 		return timeinfo.tm_min;
 	}
 
-	int DateTime::getSeconds()
+	int DateTime::GetSeconds()
 	{
 		return timeinfo.tm_sec;
 	}
 
-	void DateTime::setDay(int val)
+	void DateTime::SetDay(int val)
 	{
 		timeinfo.tm_mday = val;
 	}
 
-	void DateTime::setMonth(int val)
+	void DateTime::SetMonth(int val)
 	{
 		timeinfo.tm_mon = val - 1;
 	}
 
-	void DateTime::setYear(int val)
+	void DateTime::SetYear(int val)
 	{
 		timeinfo.tm_year = val - 1900;
 	}
 
-	void DateTime::setHour(int val)
+	void DateTime::SetHour(int val)
 	{
 		timeinfo.tm_hour = val;
 	}
 
-	void DateTime::setMinute(int val)
+	void DateTime::SetMinute(int val)
 	{
 		timeinfo.tm_min = val;
 	}
 
-	void DateTime::setSecond(int val)
+	void DateTime::SsetSecond(int val)
 	{
 		timeinfo.tm_sec = val;
 	}

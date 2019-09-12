@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(CoreLibC)
+project(CoreC)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 

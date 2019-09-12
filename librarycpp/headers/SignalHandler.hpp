@@ -7,14 +7,14 @@ namespace CoreLib
 	{
 	public:
 		SignalCallback() {}
-		virtual void suspend() = 0;
-		virtual void resume() = 0;
-		virtual void shutdown() = 0;
-		virtual void alarm() = 0;
-		virtual void reset() = 0;
-		virtual void childExit() = 0;
-		virtual void userdefined1() = 0;
-		virtual void userdefined2() = 0;
+		virtual void Suspend() = 0;
+		virtual void Resume() = 0;
+		virtual void Shutdown() = 0;
+		virtual void Alarm() = 0;
+		virtual void Reset() = 0;
+		virtual void ChildExit() = 0;
+		virtual void Userdefined1() = 0;
+		virtual void Userdefined2() = 0;
 	};
 
 	class SignalHandler
@@ -22,9 +22,9 @@ namespace CoreLib
 	public:
 		SignalHandler();
 		~SignalHandler();
-		void registerCallbackClient(SignalCallback *clientptr);
-		void registerSignalHandlers();
-		bool isShutdownSignal(const int signum);
+		void RegisterCallbackClient(SignalCallback *clientptr);
+		void RegisterSignalHandlers();
+		bool IsShutdownSignal(const int signum);
 	};
 }
 #endif

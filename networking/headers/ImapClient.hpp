@@ -1,12 +1,10 @@
 #ifndef _IMAP_CLIENT
 #define _IMAP_CLIENT
 
-#include "../data/Mail.h"
-#include "../data/SecurityType.h"
-#include "TcpClient.h"
+#include "Mail.hpp"
+#include "SecurityType.hpp"
+#include "TcpClient.hpp"
 #include <string>
-
-using namespace std;
 
 class ImapClient
 {

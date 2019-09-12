@@ -13,7 +13,7 @@ using namespace std;
 typedef enum MailTextEncoding
 {
     QuotedPrintable,
-    Base64,
+    Base64String,
 	XToken,
 	UnKnownEncoding
 }MailTextEncoding;
@@ -65,9 +65,8 @@ public:
     bool HasMultiMimeData();
 
 private:
-    std::string EncodeBase64(std::string str);
-    std::string EncodeBase64(const char* buffer, unsigned long len);
-    string DecodeBase64(std::string str);
+    std::string EncodeBase64(std::vector<unsigned char>& data);
+	std::vector<unsigned char> DecodeBase64(std::string &str);
 
     std::string messageId;
     std::vector<MimeNode> mailData;
@@ -114,34 +113,11 @@ public:
     std::string GetHeaderValue(std::string key);
 
 private:
-    std::string EncodeBase64(std::string str);
-    std::string EncodeBase64(const char *buffer, unsigned long len);
-    std::string DecodeBase64(std::string str);
+	std::string EncodeBase64(std::vector<unsigned char>& data);
+	std::vector<unsigned char> DecodeBase64(std::string& str);
+
 
     std::map<std::string, std::string> headers;
-};
-
-class MailStorageInformation
-{
-public:
-
-    MailStorageInformation();
-    MailStorageInformation(const MailStorageInformation &other);
-    ~MailStorageInformation();
-    void operator=(const MailStorageInformation& other);
-    void SetDirectory(std::string dir);
-    void SetStatus(std::string st);
-    void SetAccount(std::string ac);
-    void SetUid(std::string uid);
-    std::string GetDirectory();
-    std::string GetStatus();
-    std::string GetAccount();
-    std::string GetUid();
-private:
-    std::string directory;
-    std::string status;
-    std::string account;
-    std::string UID;
 };
 
 class Mail
@@ -154,8 +130,6 @@ public:
 	void AddHeader(std::string& str);
 	void AddNode(std::string& substring, MimeNode& node, std::string boundary);
 	void ParseNode(std::string& substring, MimeNode& node);
-
-
 	std::string SerializedData;
 };
 

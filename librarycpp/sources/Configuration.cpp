@@ -12,12 +12,12 @@ namespace CoreLib
 	{
 	}
 
-	void Configuration::setFileName(std::string fname)
+	void Configuration::SetFileName(std::string fname)
 	{
 		_ConfigFileName = fname;
 	}
 
-	bool Configuration::isSection(const std::string &section)
+	bool Configuration::IsSection(const std::string &section)
 	{
 		if (_Configuration.find(section) == _Configuration.end())
 		{
@@ -27,11 +27,11 @@ namespace CoreLib
 		return true;
 	}
 
-	std::string Configuration::getValue(const std::string &section, const std::string &settingKey, const std::string defval)
+	std::string Configuration::GetValue(const std::string &section, const std::string &settingKey, const std::string defval)
 	{
 		std::string str = defval;
 
-		if (isSection(section))
+		if (IsSection(section))
 		{
 			std::map<std::string, std::string> sub_section = _Configuration[section];
 
@@ -44,13 +44,13 @@ namespace CoreLib
 		return str;
 	}
 
-	bool Configuration::loadConfiguration(const std::string &configFile)
+	bool Configuration::LoadConfiguration(const std::string &configFile)
 	{
 		_ConfigFileName = configFile;
-		return loadConfiguration();
+		return LoadConfiguration();
 	}
 
-	bool Configuration::loadConfiguration()
+	bool Configuration::LoadConfiguration()
 	{
 		std::string line, key, value;
 		std::string current_section_header = "";
@@ -74,13 +74,13 @@ namespace CoreLib
 					if (current_section_header.length() > 1)
 					{
 						//We reach here when a section is being read for the first time
-						addSection(current_section_header, kvlist);
+						AddSection(current_section_header, kvlist);
 					}
 				}
 				else
 				{
 					//Before staring a new section parsing we need to store the last one
-					addSection(current_section_header, kvlist);
+					AddSection(current_section_header, kvlist);
 				}
 
 				//Store the string as current section header and clear the key value list
@@ -96,12 +96,12 @@ namespace CoreLib
 			}
 
 		}
-		addSection(current_section_header, kvlist);
+		AddSection(current_section_header, kvlist);
 		file.close();
 		return true;
 	}
 
-	void Configuration::addSection(std::string &str, const std::map<std::string, std::string> &list)
+	void Configuration::AddSection(std::string &str, const std::map<std::string, std::string> &list)
 	{
 		strremove(str, '[');
 		strremove(str, ']');

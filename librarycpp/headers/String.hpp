@@ -78,8 +78,6 @@ namespace CoreLib
 		char getAt(const size_t atpos) const;
 		void SetAt(const size_t atpos, const char ch);
 
-		unsigned char* fromBase64();
-		char* toBase64();
 		wchar_t* toWideCharacter();
 
 		static void join(List<String> &tokens, String &newString, const char delimiter = ' ');

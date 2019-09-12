@@ -1,4 +1,68 @@
-#include "Network.h"
+#if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
+#define WIN32_LEAN_AND_MEAN
+#include <WinSock2.h>
+#include <Windows.h>
+#include <WS2tcpip.h>
+#include <memory.h>
+#endif
+
+#include <errno.h>
+#include <stdlib.h>
+
+int errno;
+
+#if defined(__gnu_linux__) || defined (__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#include <unistd.h>
+#include <pthread.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/select.h>
+#include <fcntl.h>
+#endif
+
+#if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
+#define socklen_t int
+#define socketerror  ::WSAGetLastError()
+#define socketioctl(socket, flag, var) ioctlsocket(socket, flag, (u_long*)&var)
+#ifndef ERESTART
+#define ERESTART 999
+#endif
+#endif
+
+#if defined(__gnu_linux__) || defined (__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#define socketerror   errno
+#define closesocket(n) close(n) 
+#define SOCKET long
+#define INVALID_SOCKET (-1)
+#define SOCKET_ERROR (-1)
+#endif
+
+#if defined(__gnu_linux__) || defined (__linux__)
+#define socketioctl(socket, flag, var) ioctlsocket(socket, flag, (char*)&var)
+#endif
+
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#define socketioctl(socket, flag, var) ioctl(socket, flag, (char*)&var)
+#ifndef ERESTART
+#define ERESTART 999
+#endif
+#endif
+
+#include <openssl/bio.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#include <openssl/x509.h>
+#include <openssl/x509_vfy.h>
+
+#include "Network.hpp"
 #include <map>
 
 #if defined(_WIN32) || defined(WIN32) || defined (_WIN64) || defined (WIN64)
@@ -6,6 +70,7 @@
 #include <openssl/applink.c>
 #endif
 #endif
+
 
 Network networkselfinit;
 

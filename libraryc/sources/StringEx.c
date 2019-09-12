@@ -9,7 +9,7 @@ wchar_t *strtowstr(const char *str)
     return NULL;
 }
 
-char* strfromwstr(wchar_t* wstr)
+char* strfromwstr(const wchar_t* wstr)
 {
     size_t wlen = 0;
     char* str = NULL;
