@@ -7,7 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(Project CoreLib)
 project(${Project})
 
-add_subdirectory(sources)
-add_subdirectory(examples)
+add_subdirectory(project)
+#add_subdirectory(examples)
 
 

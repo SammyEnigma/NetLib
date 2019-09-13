@@ -4,7 +4,7 @@
 #include <QtWidgets>
 #include <QMainWindow>
 #include <QSplitter>
-#include "RichDataList.h"
+#include "RichDataList.hpp"
 
 class MainWindow : public QMainWindow
 {
