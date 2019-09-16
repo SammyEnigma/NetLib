@@ -7,7 +7,7 @@ project(QtExtraWidgets)
 
 if(WIN32)
 message("WARNING: On Windows, please set the Qt5_DIR to the Qt5 CMake configuration path")
-set(Qt5_DIR C:/Qt/5.13.0/msvc2017_64/lib/cmake/Qt5)
+set(Qt5_DIR C:/Qt/5.13.1/msvc2017_64/lib/cmake/Qt5)
 endif()
 
 include_directories(./headers)

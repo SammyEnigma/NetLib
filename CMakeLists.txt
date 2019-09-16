@@ -8,6 +8,6 @@ set(Project CoreLib)
 project(${Project})
 
 add_subdirectory(project)
-#add_subdirectory(examples)
+add_subdirectory(examples)
 
 

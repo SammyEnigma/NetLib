@@ -1,5 +1,5 @@
 #include "QtDemo.h"
-#include "ThemeHandler.h"
+#include "ThemeHandler.hpp"
 
 int main(int argc, char* argv[])
 {
