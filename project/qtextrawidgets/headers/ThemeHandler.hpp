@@ -11,13 +11,15 @@
 typedef enum ThemeSetting
 {
     Light,
-    Dark
+    Dark,
+	Silver
 }ThemeSetting;
 
 void initThemes();
 void adjustBackground(QWidget* ptr);
 void setAppThemeDark(QApplication *ptr);
 void setAppThemeLight(QApplication* ptr);
+void setAppThemeSilver(QApplication* ptr);
 QPalette currentThemePalette();
 QString currentFont();
 

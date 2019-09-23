@@ -29,6 +29,7 @@ ${PROJECT_SOURCE_DIR}/IndicatorBar.cpp
 ${PROJECT_SOURCE_DIR}/IndicatorCircular.cpp 
 ${PROJECT_SOURCE_DIR}/PictureBox.cpp 
 ${PROJECT_SOURCE_DIR}/RichDataList.cpp 
+${PROJECT_SOURCE_DIR}/RichOptionList.cpp 
 ${PROJECT_SOURCE_DIR}/RichLabel.cpp 
 ${PROJECT_SOURCE_DIR}/ThemeHandler.cpp 
 ${PROJECT_SOURCE_DIR}/VerticalLine.cpp 
@@ -43,6 +44,7 @@ ${PROJECT_HEADER_DIR}/IndicatorBar.hpp
 ${PROJECT_HEADER_DIR}/IndicatorCircular.hpp 
 ${PROJECT_HEADER_DIR}/PictureBox.hpp 
 ${PROJECT_HEADER_DIR}/RichDataList.hpp 
+${PROJECT_HEADER_DIR}/RichOptionList.hpp 
 ${PROJECT_HEADER_DIR}/RichLabel.hpp 
 ${PROJECT_HEADER_DIR}/ThemeHandler.hpp 
 ${PROJECT_HEADER_DIR}/VerticalLine.hpp 

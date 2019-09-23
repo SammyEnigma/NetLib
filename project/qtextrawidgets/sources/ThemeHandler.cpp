@@ -71,6 +71,32 @@ void setAppThemeLight(QApplication* ptr)
     application_palette = lightPalette;
 }
 
+void setAppThemeSilver(QApplication* ptr)
+{
+#define FUSION_THEME
+#ifdef FUSION_THEME
+	ptr->setStyle(QStyleFactory::create("Fusion"));
+	QPalette silverPalette;
+	silverPalette.setColor(QPalette::Window, QColor(53, 53, 53));
+	silverPalette.setColor(QPalette::WindowText, Qt::white);
+	silverPalette.setColor(QPalette::Base, QColor(25, 25, 25));
+	silverPalette.setColor(QPalette::AlternateBase, QColor(53, 53, 53));
+	silverPalette.setColor(QPalette::ToolTipBase, Qt::white);
+	silverPalette.setColor(QPalette::ToolTipText, Qt::white);
+	silverPalette.setColor(QPalette::Text, Qt::white);
+	silverPalette.setColor(QPalette::Button, QColor(53, 53, 53));
+	silverPalette.setColor(QPalette::ButtonText, Qt::white);
+	silverPalette.setColor(QPalette::BrightText, Qt::red);
+	silverPalette.setColor(QPalette::Link, QColor(225, 225, 225));
+	silverPalette.setColor(QPalette::Highlight, QColor(225, 225, 225));
+	silverPalette.setColor(QPalette::HighlightedText, Qt::black);
+	ptr->setPalette(silverPalette);
+	ptr->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+#endif
+	application_theme = Silver;
+	application_palette = silverPalette;
+}
+
 QPalette currentThemePalette()
 {
     return application_palette;
