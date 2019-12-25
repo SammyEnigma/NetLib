@@ -6,7 +6,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(Project examples)
 project(${Project})
 
-add_subdirectory(QtRichDataList)
+add_subdirectory(HttpServer)
 
 
 
